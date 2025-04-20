@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { LearningContext } from './learningContext';
@@ -16,13 +15,11 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to fetch all data from Supabase
   const fetchData = async () => {
     try {
       setIsLoading(true);
       setError(null);
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.log('No authenticated user found, using local data');
@@ -30,7 +27,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         return;
       }
       
-      // Fetch topics
       const { data: topicsData, error: topicsError } = await supabase
         .from('topics')
         .select('*')
@@ -38,7 +34,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (topicsError) throw topicsError;
 
-      // Fetch methods
       const { data: methodsData, error: methodsError } = await supabase
         .from('learning_methods')
         .select('*')
@@ -46,7 +41,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (methodsError) throw methodsError;
 
-      // Fetch journals
       const { data: journalsData, error: journalsError } = await supabase
         .from('journal_entries')
         .select('*')
@@ -54,7 +48,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (journalsError) throw journalsError;
 
-      // Fetch resources
       const { data: resourcesData, error: resourcesError } = await supabase
         .from('resources')
         .select('*')
@@ -62,7 +55,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (resourcesError) throw resourcesError;
 
-      // Fetch categories
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
         .select('*')
@@ -71,7 +63,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (categoriesError) throw categoriesError;
 
-      // Transform data to match our application types
       const transformedTopics: Topic[] = topicsData?.map(item => ({
         id: item.id,
         title: item.title,
@@ -126,13 +117,11 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         isActive: item.is_active
       })) || [];
 
-      // If we have data, use it; otherwise fall back to initial state
       setTopics(transformedTopics.length > 0 ? transformedTopics : initialTopics);
       setMethods(transformedMethods.length > 0 ? transformedMethods : initialMethods);
       setJournals(transformedJournals.length > 0 ? transformedJournals : initialJournals);
       setResources(transformedResources.length > 0 ? transformedResources : initialResources);
       setCategories(transformedCategories.length > 0 ? transformedCategories : initialCategories);
-      
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to load data. Using local data instead.');
@@ -142,11 +131,9 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     fetchData();
 
-    // Set up real-time listeners for updates
     const topicsChannel = supabase
       .channel('public:topics')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'topics' }, () => {
@@ -191,20 +178,17 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
   }, []);
 
-  // Add a topic to Supabase
   const addTopic = async (topic: Omit<Topic, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const newId = uuidv4();
       const now = new Date().toISOString();
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
         return;
       }
       
-      // First, update local state for immediate feedback
       const newTopic: Topic = {
         ...topic,
         id: newId,
@@ -214,7 +198,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       setTopics(prevTopics => [...prevTopics, newTopic]);
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('topics')
         .insert({
@@ -233,7 +216,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error adding topic:', error);
         toast.error('Failed to save topic to database');
-        // Revert local state change if Supabase save fails
         setTopics(prevTopics => prevTopics.filter(t => t.id !== newId));
       } else {
         toast.success('Topic added successfully');
@@ -244,17 +226,14 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Update a topic in Supabase
   const updateTopic = async (id: string, updates: Partial<Topic>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setTopics(prevTopics =>
         prevTopics.map(topic =>
           topic.id === id
@@ -263,7 +242,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         )
       );
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('topics')
         .update({
@@ -283,7 +261,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error updating topic:', error);
         toast.error('Failed to update topic in database');
-        // Revert local state change if Supabase save fails
         fetchData();
       } else {
         toast.success('Topic updated successfully');
@@ -294,23 +271,19 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Delete a topic from Supabase
   const deleteTopic = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
       setMethods(prevMethods => prevMethods.filter(method => method.topicId !== id));
       setJournals(prevJournals => prevJournals.filter(journal => journal.topicId !== id));
       setResources(prevResources => prevResources.filter(resource => resource.topicId !== id));
       
-      // Then, delete from Supabase
       const { error } = await supabase
         .from('topics')
         .delete()
@@ -320,7 +293,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error deleting topic:', error);
         toast.error('Failed to delete topic from database');
-        // Revert local state change if Supabase delete fails
         fetchData();
       } else {
         toast.success('Topic deleted successfully');
@@ -331,20 +303,17 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Add a method to Supabase
   const addMethod = async (method: Omit<LearningMethod, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const newId = uuidv4();
       const now = new Date().toISOString();
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
         return;
       }
       
-      // First, update local state for immediate feedback
       const newMethod: LearningMethod = {
         ...method,
         id: newId,
@@ -354,7 +323,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       setMethods(prevMethods => [...prevMethods, newMethod]);
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('learning_methods')
         .insert({
@@ -370,7 +338,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error adding method:', error);
         toast.error('Failed to save method to database');
-        // Revert local state change if Supabase save fails
         setMethods(prevMethods => prevMethods.filter(m => m.id !== newId));
       } else {
         toast.success('Learning method added successfully');
@@ -381,17 +348,14 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Update a method in Supabase
   const updateMethod = async (id: string, updates: Partial<LearningMethod>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setMethods(prevMethods =>
         prevMethods.map(method =>
           method.id === id
@@ -400,7 +364,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         )
       );
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('learning_methods')
         .update({
@@ -417,7 +380,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error updating method:', error);
         toast.error('Failed to update method in database');
-        // Revert local state change if Supabase save fails
         fetchData();
       } else {
         toast.success('Learning method updated successfully');
@@ -428,20 +390,16 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Delete a method from Supabase
   const deleteMethod = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setMethods(prevMethods => prevMethods.filter(method => method.id !== id));
       
-      // Then, delete from Supabase
       const { error } = await supabase
         .from('learning_methods')
         .delete()
@@ -451,7 +409,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error deleting method:', error);
         toast.error('Failed to delete method from database');
-        // Revert local state change if Supabase delete fails
         fetchData();
       } else {
         toast.success('Learning method deleted successfully');
@@ -462,20 +419,17 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Add a journal to Supabase
   const addJournal = async (journal: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const newId = uuidv4();
       const now = new Date().toISOString();
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
         return;
       }
       
-      // First, update local state for immediate feedback
       const newJournal: JournalEntry = {
         ...journal,
         id: newId,
@@ -485,7 +439,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       setJournals(prevJournals => [...prevJournals, newJournal]);
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('journal_entries')
         .insert({
@@ -500,7 +453,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error adding journal:', error);
         toast.error('Failed to save journal entry to database');
-        // Revert local state change if Supabase save fails
         setJournals(prevJournals => prevJournals.filter(j => j.id !== newId));
       } else {
         toast.success('Journal entry added successfully');
@@ -511,17 +463,14 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Update a journal in Supabase
   const updateJournal = async (id: string, updates: Partial<JournalEntry>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setJournals(prevJournals =>
         prevJournals.map(journal =>
           journal.id === id
@@ -530,7 +479,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         )
       );
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('journal_entries')
         .update({
@@ -546,7 +494,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error updating journal:', error);
         toast.error('Failed to update journal entry in database');
-        // Revert local state change if Supabase save fails
         fetchData();
       } else {
         toast.success('Journal entry updated successfully');
@@ -557,20 +504,16 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Delete a journal from Supabase
   const deleteJournal = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setJournals(prevJournals => prevJournals.filter(journal => journal.id !== id));
       
-      // Then, delete from Supabase
       const { error } = await supabase
         .from('journal_entries')
         .delete()
@@ -580,7 +523,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error deleting journal:', error);
         toast.error('Failed to delete journal entry from database');
-        // Revert local state change if Supabase delete fails
         fetchData();
       } else {
         toast.success('Journal entry deleted successfully');
@@ -591,30 +533,27 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Add a resource to Supabase
   const addResource = async (resource: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       const newId = uuidv4();
       const now = new Date().toISOString();
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
         return;
       }
       
-      // First, update local state for immediate feedback
       const newResource: Resource = {
         ...resource,
         id: newId,
         createdAt: now,
         updatedAt: now,
+        tags: resource.tags || [],
       };
       
       setResources(prevResources => [...prevResources, newResource]);
       
-      // Then, save to Supabase - note: tags needs to be added to the resources table in Supabase
       const { error } = await supabase
         .from('resources')
         .insert({
@@ -624,13 +563,13 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
           url: resource.url,
           notes: resource.notes,
           type: resource.type || '',
+          tags: resource.tags || [],
           user_id: user.id
         });
       
       if (error) {
         console.error('Error adding resource:', error);
         toast.error('Failed to save resource to database');
-        // Revert local state change if Supabase save fails
         setResources(prevResources => prevResources.filter(r => r.id !== newId));
       } else {
         toast.success('Resource added successfully');
@@ -641,26 +580,27 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Update a resource in Supabase
   const updateResource = async (id: string, updates: Partial<Resource>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setResources(prevResources =>
         prevResources.map(resource =>
           resource.id === id
-            ? { ...resource, ...updates, updatedAt: new Date().toISOString() }
+            ? { 
+                ...resource, 
+                ...updates, 
+                updatedAt: new Date().toISOString(),
+                tags: updates.tags || resource.tags || []
+              }
             : resource
         )
       );
       
-      // Then, save to Supabase - note: tags needs to be added to the resources table in Supabase
       const { error } = await supabase
         .from('resources')
         .update({
@@ -669,6 +609,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
           url: updates.url,
           notes: updates.notes,
           type: updates.type || '',
+          tags: updates.tags || [],
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
@@ -677,7 +618,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error updating resource:', error);
         toast.error('Failed to update resource in database');
-        // Revert local state change if Supabase save fails
         fetchData();
       } else {
         toast.success('Resource updated successfully');
@@ -688,20 +628,16 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Delete a resource from Supabase
   const deleteResource = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setResources(prevResources => prevResources.filter(resource => resource.id !== id));
       
-      // Then, delete from Supabase
       const { error } = await supabase
         .from('resources')
         .delete()
@@ -711,7 +647,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error deleting resource:', error);
         toast.error('Failed to delete resource from database');
-        // Revert local state change if Supabase delete fails
         fetchData();
       } else {
         toast.success('Resource deleted successfully');
@@ -722,20 +657,17 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Add a category to Supabase
   const addCategory = async (name: string) => {
     try {
       const newId = uuidv4();
       const order = categories.length;
       
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
         return;
       }
       
-      // First, update local state for immediate feedback
       const newCategory: Category = {
         id: newId,
         name,
@@ -745,7 +677,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       setCategories(prevCategories => [...prevCategories, newCategory]);
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('categories')
         .insert({
@@ -759,7 +690,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error adding category:', error);
         toast.error('Failed to save category to database');
-        // Revert local state change if Supabase save fails
         setCategories(prevCategories => prevCategories.filter(c => c.id !== newId));
       } else {
         toast.success('Category added successfully');
@@ -770,17 +700,14 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Update a category in Supabase
   const updateCategory = async (id: string, updates: Partial<Category>) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
         return;
       }
       
-      // First, update local state for immediate feedback
       setCategories(prevCategories =>
         prevCategories.map(category =>
           category.id === id
@@ -789,7 +716,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         )
       );
       
-      // Then, save to Supabase
       const { error } = await supabase
         .from('categories')
         .update({
@@ -803,7 +729,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error updating category:', error);
         toast.error('Failed to update category in database');
-        // Revert local state change if Supabase save fails
         fetchData();
       } else {
         toast.success('Category updated successfully');
@@ -814,27 +739,22 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Delete a category from Supabase
   const deleteCategory = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
         return;
       }
       
-      // Check if there are any topics in this category
       const hasTopics = topics.some(topic => topic.category === id);
       
       if (hasTopics) {
         throw new Error("Cannot delete category with existing topics");
       }
       
-      // First, update local state for immediate feedback
       setCategories(prevCategories => prevCategories.filter(category => category.id !== id));
       
-      // Then, delete from Supabase
       const { error } = await supabase
         .from('categories')
         .delete()
@@ -844,7 +764,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error deleting category:', error);
         toast.error('Failed to delete category from database');
-        // Revert local state change if Supabase delete fails
         fetchData();
       } else {
         toast.success('Category deleted successfully');
@@ -856,10 +775,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Reorder a category in Supabase
   const reorderCategory = async (id: string, direction: 'up' | 'down') => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
@@ -882,11 +799,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         cat.order = idx;
       });
       
-      // First, update local state for immediate feedback
       setCategories(newCategories);
       
-      // Then, update in Supabase
-      // We need to update both categories that were swapped
       const cat1 = newCategories[index];
       const cat2 = newCategories[swapIndex];
       
@@ -905,7 +819,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error1 || error2) {
         console.error('Error reordering categories:', error1 || error2);
         toast.error('Failed to reorder categories in database');
-        // Revert local state change if Supabase update fails
         fetchData();
       }
     } catch (error) {
@@ -914,10 +827,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
-  // Toggle a category active status in Supabase
   const toggleCategoryActive = async (id: string) => {
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to update data');
@@ -929,14 +840,12 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       const newIsActive = !category.isActive;
       
-      // First, update local state for immediate feedback
       setCategories(prevCategories =>
         prevCategories.map(cat =>
           cat.id === id ? { ...cat, isActive: newIsActive } : cat
         )
       );
       
-      // Then, update in Supabase
       const { error } = await supabase
         .from('categories')
         .update({ is_active: newIsActive })
@@ -946,7 +855,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) {
         console.error('Error toggling category active status:', error);
         toast.error('Failed to update category status in database');
-        // Revert local state change if Supabase update fails
         fetchData();
       }
     } catch (error) {

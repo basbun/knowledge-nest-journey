@@ -150,6 +150,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          tags: string[] | null
           title: string
           topic_id: string | null
           type: string
@@ -161,6 +162,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          tags?: string[] | null
           title: string
           topic_id?: string | null
           type: string
@@ -172,6 +174,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          tags?: string[] | null
           title?: string
           topic_id?: string | null
           type?: string
