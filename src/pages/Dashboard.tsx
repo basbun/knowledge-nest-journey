@@ -1,3 +1,4 @@
+
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
@@ -50,7 +51,8 @@ const Dashboard = () => {
         <p className="text-hub-text-muted">Track, reflect, and grow your knowledge</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {/* First row - Stats cards with consistent width */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 w-full">
         <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Topics</h3>
           <div className="flex items-end justify-between">
@@ -84,8 +86,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-        <div className="lg:col-span-3">
+      {/* Second row - Topics container with consistent width */}
+      <div className="w-full mb-6">
+        <div className="w-full">
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg md:text-xl font-semibold text-hub-text">Topics by Status</h2>
@@ -96,9 +99,9 @@ const Dashboard = () => {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
               {Object.entries(statusGroups).map(([status, statusTopics]) => (
-                <div key={status} className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
+                <div key={status} className="bg-white rounded-lg shadow-sm border border-hub-border p-4 h-full">
                   <div className="flex items-center mb-3">
                     <span className={cn('status-badge mr-2', getStatusClass(status))}>
                       {status}
@@ -133,7 +136,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
+          <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4 w-full">
             <h3 className="text-lg font-medium text-hub-text-muted mb-4">Activities Overview</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
@@ -160,12 +163,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mb-6">
+      {/* Third row - Recent Activity with consistent width */}
+      <div className="w-full mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-hub-text">Recent Activity</h2>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4 w-full">
           {[...journals].sort((a, b) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ).slice(0, 5).map(journal => (
