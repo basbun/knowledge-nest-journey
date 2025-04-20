@@ -6,13 +6,21 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TopicForm from "@/components/topics/TopicForm";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Topic, TopicStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 const Dashboard = () => {
-  const { topics, methods, journals, resources } = useLearning();
+  const { topics, methods, journals, resources, categories } = useLearning();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Helper function to get category name from ID
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : categoryId;
+  };
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -44,6 +52,18 @@ const Dashboard = () => {
     statusGroups[topic.status].push(topic);
   });
 
+  const goToTopics = () => {
+    navigate('/topics');
+  };
+
+  const goToJournal = () => {
+    navigate('/journal');
+  };
+
+  const goToResources = () => {
+    navigate('/resources');
+  };
+
   return (
     <MainLayout>
       <div className="mb-6">
@@ -57,11 +77,13 @@ const Dashboard = () => {
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Topics</h3>
           <div className="flex items-end justify-between">
             <span className="text-3xl font-bold text-hub-primary">{totalTopics}</span>
-            <Link to="/topics">
-              <Button variant="outline" className="text-hub-primary border-hub-primary">
-                View All
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              className="text-hub-primary border-hub-primary"
+              onClick={goToTopics}
+            >
+              View All
+            </Button>
           </div>
         </div>
 
@@ -92,11 +114,13 @@ const Dashboard = () => {
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg md:text-xl font-semibold text-hub-text">Topics by Status</h2>
-              <Link to="/topics">
-                <Button variant="link" className="text-hub-primary">
-                  View All
-                </Button>
-              </Link>
+              <Button 
+                variant="link" 
+                className="text-hub-primary"
+                onClick={goToTopics}
+              >
+                View All
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -112,20 +136,24 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     {statusTopics.slice(0, 3).map(topic => (
-                      <Link key={topic.id} to="/topics" className="block">
+                      <Link key={topic.id} to={`/topics`} className="block">
                         <div className="p-2 hover:bg-gray-50 rounded-md transition-colors">
                           <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
                           <div className="flex justify-between text-xs text-hub-text-muted">
-                            <span>{topic.category}</span>
+                            <span>{getCategoryName(topic.category)}</span>
                             <span>{topic.progress}%</span>
                           </div>
                         </div>
                       </Link>
                     ))}
                     {statusTopics.length > 3 && (
-                      <Link to="/topics" className="text-hub-primary text-sm hover:underline block text-center mt-2">
+                      <Button 
+                        variant="link" 
+                        className="text-hub-primary text-sm hover:underline block text-center mt-2 w-full" 
+                        onClick={goToTopics}
+                      >
                         + {statusTopics.length - 3} more
-                      </Link>
+                      </Button>
                     )}
                     {statusTopics.length === 0 && (
                       <p className="text-hub-text-muted text-sm py-2 text-center">No topics</p>
@@ -152,13 +180,22 @@ const Dashboard = () => {
                 <span className="text-hub-accent font-medium">{totalMethods}</span>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              className="w-full mt-4 text-hub-primary border-hub-primary" 
-              onClick={() => setIsFormOpen(true)}
-            >
-              <PlusIcon className="h-4 w-4 mr-1" /> Add New Topic
-            </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <Button 
+                variant="outline" 
+                className="w-full text-hub-primary border-hub-primary" 
+                onClick={() => setIsFormOpen(true)}
+              >
+                <PlusIcon className="h-4 w-4 mr-1" /> Add New Topic
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full text-hub-accent border-hub-accent" 
+                onClick={() => setIsActivityDialogOpen(true)}
+              >
+                <PlusIcon className="h-4 w-4 mr-1" /> Add Activity
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -207,11 +244,13 @@ const Dashboard = () => {
           )}
           {journals.length > 0 && (
             <div className="text-center mt-4">
-              <Link to="/journal">
-                <Button variant="link" className="text-hub-primary">
-                  View All Journal Entries
-                </Button>
-              </Link>
+              <Button 
+                variant="link" 
+                className="text-hub-primary"
+                onClick={goToJournal}
+              >
+                View All Journal Entries
+              </Button>
             </div>
           )}
         </div>
@@ -223,6 +262,52 @@ const Dashboard = () => {
             <DialogTitle>Add New Topic</DialogTitle>
           </DialogHeader>
           <TopicForm onClose={() => setIsFormOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isActivityDialogOpen} onOpenChange={setIsActivityDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add Activity</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <h3 className="text-lg font-medium">Choose activity type:</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Button 
+                variant="outline" 
+                className="flex flex-col h-28 p-4 items-center justify-center gap-2"
+                onClick={() => {
+                  setIsActivityDialogOpen(false);
+                  goToJournal();
+                }}
+              >
+                <PlusIcon className="h-6 w-6" />
+                <span>Journal Entry</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="flex flex-col h-28 p-4 items-center justify-center gap-2"
+                onClick={() => {
+                  setIsActivityDialogOpen(false);
+                  goToResources();
+                }}
+              >
+                <PlusIcon className="h-6 w-6" />
+                <span>Resource</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="flex flex-col h-28 p-4 items-center justify-center gap-2"
+                onClick={() => {
+                  setIsActivityDialogOpen(false);
+                  navigate('/topics');
+                }}
+              >
+                <PlusIcon className="h-6 w-6" />
+                <span>Learning Method</span>
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </MainLayout>
