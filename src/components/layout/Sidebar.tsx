@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, BookText, FileText, List, Menu, X, Globe } from 'lucide-react';
@@ -68,9 +69,9 @@ const Sidebar = () => {
               )}
             >
               {collapsed ? (
-                <Globe className="h-5 w-5" />
+                <BookOpen className="h-5 w-5" />
               ) : (
-                <Globe className="h-5 w-5" />
+                <BookOpen className="h-5 w-5" />
               )}
             </button>
           )}
@@ -110,3 +111,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
