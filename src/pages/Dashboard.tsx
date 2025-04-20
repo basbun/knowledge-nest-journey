@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
@@ -56,12 +55,12 @@ const Dashboard = () => {
 
   return (
     <MainLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-hub-text mb-2">Learning Dashboard</h1>
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-hub-text mb-2">Learning Dashboard</h1>
         <p className="text-hub-text-muted">Track, reflect, and grow your knowledge</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Total Topics</h3>
           <div className="flex items-end justify-between">
@@ -114,12 +113,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-hub-text">Topics by Status</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-hub-text">Topics by Status</h2>
           <Link to="/topics">
             <Button variant="link" className="text-hub-primary">
-              View All Topics
+              View All
             </Button>
           </Link>
         </div>
@@ -161,7 +160,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-hub-text">Recent Activity</h2>
         </div>
