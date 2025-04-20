@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,10 @@ const Dashboard = () => {
         return 'status-in-progress';
       case 'Completed':
         return 'status-completed';
+      case 'On Hold':
+        return 'status-on-hold';
+      case 'Archived':
+        return 'status-archived';
       default:
         return 'status-to-start';
     }
@@ -44,7 +49,9 @@ const Dashboard = () => {
   const statusGroups: Record<TopicStatus, Topic[]> = {
     'Not Started': [],
     'In Progress': [],
-    'Completed': []
+    'Completed': [],
+    'On Hold': [],
+    'Archived': []
   };
 
   topics.forEach(topic => {
