@@ -7,6 +7,7 @@ import { PlusIcon, ExternalLink, FileText, Link, BookOpen } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ResourceForm from './ResourceForm';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface ResourceListProps {
@@ -37,19 +38,9 @@ const ResourceList = ({ topicId }: ResourceListProps) => {
     toast.success('Resource deleted');
   };
 
-  const getResourceIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'article':
-        return FileText;
-      case 'tutorial':
-        return BookOpen;
-      case 'documentation':
-        return FileText;
-      case 'book':
-        return BookOpen;
-      default:
-        return Link;
-    }
+  // Default to Link icon for all resources
+  const getResourceIcon = () => {
+    return Link;
   };
 
   return (
@@ -79,7 +70,7 @@ const ResourceList = ({ topicId }: ResourceListProps) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {topicResources.map((resource) => {
-            const ResourceIcon = getResourceIcon(resource.type);
+            const ResourceIcon = getResourceIcon();
             
             return (
               <div 
@@ -94,9 +85,6 @@ const ResourceList = ({ topicId }: ResourceListProps) => {
                     <div>
                       <div className="flex items-center mb-1">
                         <h4 className="font-medium text-hub-text">{resource.title}</h4>
-                        <span className="bg-hub-muted text-xs px-2 py-0.5 rounded text-hub-text-muted ml-2">
-                          {resource.type}
-                        </span>
                       </div>
                       
                       {resource.url && (
@@ -112,6 +100,16 @@ const ResourceList = ({ topicId }: ResourceListProps) => {
                       
                       {resource.notes && (
                         <p className="text-sm text-hub-text-muted mt-2 line-clamp-2">{resource.notes}</p>
+                      )}
+                      
+                      {resource.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {resource.tags.map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-hub-text-muted text-xs">
+                              #{tag}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>

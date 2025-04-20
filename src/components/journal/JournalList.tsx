@@ -78,10 +78,7 @@ const JournalList = ({ topicId }: JournalListProps) => {
             >
               <div className="flex justify-between mb-2">
                 <div className="flex items-center">
-                  <span className="bg-hub-muted text-xs px-2 py-1 rounded text-hub-text-muted">
-                    {journal.category}
-                  </span>
-                  <span className="text-xs text-hub-text-muted ml-2">
+                  <span className="text-xs text-hub-text-muted">
                     {getRelativeTimeFromNow(journal.createdAt)}
                   </span>
                 </div>
