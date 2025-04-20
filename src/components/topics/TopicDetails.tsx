@@ -1,17 +1,17 @@
+
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { formatDistanceToNow } from 'date-fns';
-import MethodList from '../methods/MethodList';
-import ResourceList from '../resources/ResourceList';
-import JournalList from '../journal/JournalList';
 import { cn } from '@/lib/utils';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import StatusBadge from './StatusBadge';
+import TopicProgress from './TopicProgress';
+import TopicTabs from './TopicTabs';
 
 interface TopicDetailsProps {
   topic: Topic;
@@ -29,19 +29,6 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
     setIsDeleting(false);
   };
 
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'Not Started':
-        return 'bg-gray-100 text-gray-800';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'Completed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not set';
     return new Date(dateString).toLocaleDateString();
@@ -57,9 +44,7 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
         <div>
           <div className="flex flex-col md:flex-row md:items-center gap-3">
             <h2 className="text-xl md:text-2xl font-bold text-hub-text">{topic.title}</h2>
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(topic.status)}`}>
-              {topic.status}
-            </span>
+            <StatusBadge status={topic.status} />
           </div>
           <p className="text-hub-text-muted mt-1">{topic.category}</p>
         </div>
@@ -118,40 +103,14 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
           </div>
         </div>
         
-        <div className="mb-2">
-          <div className="flex justify-between text-sm text-hub-text-muted mb-1">
-            <h3 className="font-medium">Progress</h3>
-            <span>{topic.progress}%</span>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-value" style={{ width: `${topic.progress}%` }}></div>
-          </div>
-        </div>
+        <TopicProgress progress={topic.progress} className="mb-2" />
         
         <div className="mt-4 text-xs text-hub-text-muted">
           <p>Last updated {getRelativeTimeFromNow(topic.updatedAt)}</p>
         </div>
       </div>
 
-      <Tabs defaultValue="methods">
-        <TabsList className="mb-4">
-          <TabsTrigger value="methods">Learning Methods</TabsTrigger>
-          <TabsTrigger value="journal">Journal Entries</TabsTrigger>
-          <TabsTrigger value="resources">Resources</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="methods">
-          <MethodList topicId={topic.id} />
-        </TabsContent>
-        
-        <TabsContent value="journal">
-          <JournalList topicId={topic.id} />
-        </TabsContent>
-        
-        <TabsContent value="resources">
-          <ResourceList topicId={topic.id} />
-        </TabsContent>
-      </Tabs>
+      <TopicTabs topicId={topic.id} />
     </div>
   );
 };
