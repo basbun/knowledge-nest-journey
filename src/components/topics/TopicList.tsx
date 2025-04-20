@@ -5,7 +5,7 @@ import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { PlusIcon, ArrowUp, ArrowDown } from 'lucide-react';
+import { PlusIcon, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
@@ -65,6 +65,7 @@ const TopicList = () => {
     if (newCategoryName.trim()) {
       addCategory(newCategoryName.trim());
       setNewCategoryName('');
+      toast.success("Category added successfully");
     }
   };
 
@@ -134,6 +135,14 @@ const TopicList = () => {
                 />
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDeleteCategory(category.id)}
+              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
           
           {category.isActive && (

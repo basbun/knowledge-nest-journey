@@ -29,10 +29,10 @@ const Sidebar = () => {
   };
 
   const handleNavClick = (path: string) => {
+    navigate(path);
     if (isMobile) {
       setMobileOpen(false);
     }
-    navigate(path);
   };
 
   return (
