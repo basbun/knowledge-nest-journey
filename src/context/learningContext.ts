@@ -25,6 +25,8 @@ export interface LearningContextType {
   deleteCategory: (id: string) => void;
   reorderCategory: (id: string, direction: 'up' | 'down') => void;
   toggleCategoryActive: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
 }
 
 export const LearningContext = createContext<LearningContextType | undefined>(undefined);
