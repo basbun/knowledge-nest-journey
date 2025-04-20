@@ -1,5 +1,4 @@
 
-import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,8 +12,6 @@ interface TopicCardProps {
 }
 
 const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
-  const { categories } = useLearning();
-
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString();
@@ -22,11 +19,6 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
 
   const getRelativeTimeFromNow = (dateString: string) => {
     return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-  };
-
-  const getCategoryName = (categoryId: string) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
   };
 
   return (
@@ -49,7 +41,6 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
         <TopicProgress progress={topic.progress} />
         
         <div className="flex justify-between text-xs text-hub-text-muted mt-4">
-          <span className="bg-hub-muted px-2 py-1 rounded">{getCategoryName(topic.category)}</span>
           <span>Updated {getRelativeTimeFromNow(topic.updatedAt)}</span>
         </div>
         

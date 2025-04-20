@@ -1,15 +1,21 @@
-
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { PlusIcon } from 'lucide-react';
 import CategoryItem from './CategoryItem';
+
+const statusOrder = {
+  'Not Started': 0,
+  'In Progress': 1,
+  'Completed': 2
+};
 
 const TopicList = () => {
   const {
@@ -28,7 +34,15 @@ const TopicList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [draggedTopic, setDraggedTopic] = useState<Topic | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const isMobile = useIsMobile();
+
+  const filteredAndSortedTopics = topics
+    .filter(topic => statusFilter === 'all' ? true : topic.status === statusFilter)
+    .sort((a, b) => {
+      return (statusOrder[a.status as keyof typeof statusOrder] || 0) - 
+             (statusOrder[b.status as keyof typeof statusOrder] || 0);
+    });
 
   const handleTopicClick = (topic: Topic) => {
     setSelectedTopic(topic);
@@ -89,12 +103,25 @@ const TopicList = () => {
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-hub-text">Learning Topics</h2>
-        <Button
-          onClick={handleAddTopic}
-          className="bg-hub-primary hover:bg-hub-primary/90 w-full sm:w-auto"
-        >
-          <PlusIcon className="mr-2 h-4 w-4" /> Add Topic
-        </Button>
+        <div className="flex gap-4 w-full sm:w-auto">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="Not Started">Not Started</SelectItem>
+              <SelectItem value="In Progress">In Progress</SelectItem>
+              <SelectItem value="Completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={handleAddTopic}
+            className="bg-hub-primary hover:bg-hub-primary/90"
+          >
+            <PlusIcon className="mr-2 h-4 w-4" /> Add Topic
+          </Button>
+        </div>
       </div>
 
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -119,7 +146,7 @@ const TopicList = () => {
           key={category.id}
           categoryId={category.id}
           categoryName={category.name}
-          topics={topics}
+          topics={filteredAndSortedTopics}
           isActive={category.isActive}
           onTopicClick={handleTopicClick}
           onCategoryAction={handleCategoryAction}
