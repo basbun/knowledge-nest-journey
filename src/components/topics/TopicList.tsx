@@ -1,27 +1,27 @@
 
 import { useState } from 'react';
-import TopicCard from './TopicCard';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { PlusIcon, ArrowUp, ArrowDown, Trash2, MoveVertical } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
+import { PlusIcon } from 'lucide-react';
+import CategoryItem from './CategoryItem';
 
 const TopicList = () => {
-  const { 
-    topics, 
+  const {
+    topics,
     categories,
     reorderCategory,
     toggleCategoryActive,
     addCategory,
     deleteCategory,
-    updateTopic 
+    updateTopic
   } = useLearning();
+  
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -71,20 +71,6 @@ const TopicList = () => {
     }
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    try {
-      deleteCategory(categoryId);
-      toast.success("Category deleted successfully");
-    } catch (error) {
-      toast.error("Cannot delete category with existing topics");
-    }
-  };
-
-  // Drag and drop handlers
-  const handleDragStart = (topic: Topic) => {
-    setDraggedTopic(topic);
-  };
-
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -103,7 +89,7 @@ const TopicList = () => {
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-hub-text">Learning Topics</h2>
-        <Button 
+        <Button
           onClick={handleAddTopic}
           className="bg-hub-primary hover:bg-hub-primary/90 w-full sm:w-auto"
         >
@@ -119,7 +105,7 @@ const TopicList = () => {
           placeholder="New category name"
           className="px-3 py-2 border rounded-md w-full sm:w-auto"
         />
-        <Button 
+        <Button
           onClick={handleAddCategory}
           variant="outline"
           className="w-full sm:w-auto"
@@ -129,70 +115,19 @@ const TopicList = () => {
       </div>
 
       {sortedCategories.map((category) => (
-        <div 
-          key={category.id} 
-          className="mb-8"
+        <CategoryItem
+          key={category.id}
+          categoryId={category.id}
+          categoryName={category.name}
+          topics={topics}
+          isActive={category.isActive}
+          onTopicClick={handleTopicClick}
+          onCategoryAction={handleCategoryAction}
+          onDeleteCategory={deleteCategory}
+          onDragStart={setDraggedTopic}
           onDragOver={handleDragOver}
-          onDrop={() => handleDrop(category.id)}
-        >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <h3 className="text-xl font-semibold text-hub-text">{category.name}</h3>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCategoryAction(category.id, 'up')}
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCategoryAction(category.id, 'down')}
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </Button>
-                <Switch
-                  checked={category.isActive}
-                  onCheckedChange={() => handleCategoryAction(category.id, 'toggle')}
-                />
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleDeleteCategory(category.id)}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {category.isActive && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 grid-rows-[auto]">
-              {topics
-                .filter((topic) => topic.category === category.id)
-                .map((topic) => (
-                  <div 
-                    key={topic.id} 
-                    draggable
-                    onDragStart={() => handleDragStart(topic)}
-                    className="relative"
-                  >
-                    <div className="absolute top-2 right-2 z-10 cursor-grab hover:scale-110 transition-transform">
-                      <MoveVertical className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <TopicCard 
-                      topic={topic} 
-                      onClick={handleTopicClick} 
-                      className="h-full" 
-                    />
-                  </div>
-                ))}
-            </div>
-          )}
-        </div>
+          onDrop={handleDrop}
+        />
       ))}
 
       {topics.length === 0 && (
@@ -200,7 +135,7 @@ const TopicList = () => {
           <div className="text-hub-text-muted mb-4">
             You haven't added any learning topics yet.
           </div>
-          <Button 
+          <Button
             onClick={handleAddTopic}
             className="bg-hub-primary hover:bg-hub-primary/90"
           >
@@ -215,9 +150,9 @@ const TopicList = () => {
             <DialogTitle>Topic Details</DialogTitle>
           </DialogHeader>
           {selectedTopic && (
-            <TopicDetails 
-              topic={selectedTopic} 
-              onEdit={() => handleEditTopic(selectedTopic)} 
+            <TopicDetails
+              topic={selectedTopic}
+              onEdit={() => handleEditTopic(selectedTopic)}
             />
           )}
         </DialogContent>
@@ -228,9 +163,9 @@ const TopicList = () => {
           <DialogHeader>
             <DialogTitle>{isEditMode ? 'Edit Topic' : 'Add New Topic'}</DialogTitle>
           </DialogHeader>
-          <TopicForm 
-            topic={isEditMode ? selectedTopic : undefined} 
-            onClose={handleFormClose} 
+          <TopicForm
+            topic={isEditMode ? selectedTopic : undefined}
+            onClose={handleFormClose}
           />
         </DialogContent>
       </Dialog>
