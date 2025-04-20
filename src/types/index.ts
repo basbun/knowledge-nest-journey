@@ -29,7 +29,6 @@ export interface JournalEntry {
   id: string;
   topicId: string;
   content: string;
-  category: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -39,9 +38,9 @@ export interface Resource {
   id: string;
   topicId: string;
   title: string;
-  type: string;
   url?: string;
   notes?: string;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 }

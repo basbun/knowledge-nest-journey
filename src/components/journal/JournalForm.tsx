@@ -1,13 +1,16 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { JournalEntry } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Tag } from 'lucide-react';
 
 interface JournalFormProps {
   topicId: string;
@@ -16,30 +19,36 @@ interface JournalFormProps {
 }
 
 const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
-  const { addJournal, updateJournal } = useLearning();
+  const { addJournal, updateJournal, journals } = useLearning();
   
   const [content, setContent] = useState(journal?.content || '');
-  const [label, setLabel] = useState(journal?.category || '');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(journal?.tags || []);
-  const [newLabel, setNewLabel] = useState('');
-  const [showNewLabel, setShowNewLabel] = useState(false);
+  const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
 
-  const journalLabels = [
-    'Key Takeaways',
-    'Problem Solving',
-    'Questions',
-    'Progress Update',
-    'Insights',
-    'Challenges',
-    'Connections',
-    'Reflections',
-  ];
+  // Get all existing tags from all journals
+  const existingTags = useMemo(() => {
+    const allTags = new Set<string>();
+    journals.forEach(journal => {
+      journal.tags.forEach(tag => allTags.add(tag));
+    });
+    return Array.from(allTags);
+  }, [journals]);
 
-  const handleAddTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
+  // Filter suggestions based on input
+  const suggestedTags = useMemo(() => {
+    if (!tagInput) return existingTags;
+    return existingTags.filter(tag => 
+      tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+      !tags.includes(tag)
+    );
+  }, [tagInput, existingTags, tags]);
+
+  const handleAddTag = (newTag: string) => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags([...tags, newTag.trim()]);
       setTagInput('');
+      setIsTagPopoverOpen(false);
     }
   };
 
@@ -47,38 +56,24 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validations
     if (!content.trim()) {
       toast.error('Please enter some content');
       return;
     }
     
-    const finalLabel = showNewLabel ? newLabel : label;
-    
     if (journal) {
-      // Update existing journal
       updateJournal(journal.id, {
         content,
-        category: finalLabel || '', // Allow empty label
         tags,
       });
       toast.success('Journal entry updated successfully');
     } else {
-      // Add new journal
       addJournal({
         topicId,
         content,
-        category: finalLabel || '', // Allow empty label
         tags,
       });
       toast.success('Journal entry added successfully');
@@ -102,59 +97,45 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label>Label (optional)</Label>
-        {!showNewLabel ? (
-          <div className="flex gap-2">
-            <Input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="Enter a label"
-              className="w-full"
-            />
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setShowNewLabel(true)}
-            >
-              New
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Input
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="Enter new label"
-            />
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setShowNewLabel(false)}
-            >
-              Cancel
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="tags">Tags (optional)</Label>
-        <div className="flex gap-2">
-          <Input
-            id="tags"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Add tags and press Enter"
-          />
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleAddTag}
-          >
-            Add
-          </Button>
-        </div>
+        <Label htmlFor="tags">Tags</Label>
+        <Popover open={isTagPopoverOpen} onOpenChange={setIsTagPopoverOpen}>
+          <PopoverTrigger asChild>
+            <div className="flex gap-2">
+              <Input
+                id="tags"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                placeholder="Add tags..."
+                className="flex-1"
+              />
+              <Button 
+                type="button" 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Tag className="h-4 w-4" />
+                Add
+              </Button>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search tags..." />
+              <CommandEmpty>No tags found.</CommandEmpty>
+              <CommandGroup>
+                {suggestedTags.map((tag) => (
+                  <CommandItem
+                    key={tag}
+                    onSelect={() => handleAddTag(tag)}
+                    className="cursor-pointer"
+                  >
+                    {tag}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
         
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
@@ -191,4 +172,3 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
 };
 
 export default JournalForm;
-
