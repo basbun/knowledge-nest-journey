@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, BookText, FileText, List, Menu, X } from 'lucide-react';
+import { BookOpen, BookText, FileText, List, Menu, X, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
@@ -69,13 +68,9 @@ const Sidebar = () => {
               )}
             >
               {collapsed ? (
-                <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 3L11 7.5L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <Globe className="h-5 w-5" />
               ) : (
-                <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 3L4 7.5L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <Globe className="h-5 w-5" />
               )}
             </button>
           )}
