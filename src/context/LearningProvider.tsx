@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { LearningContext } from './learningContext';
@@ -274,13 +273,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteTopic = async (id: string) => {
     try {
-      // Validate that id is a valid UUID
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid UUID format for topic deletion:', id);
-        toast.error('Invalid topic ID format');
-        return;
-      }
-
+      console.log('Deleting topic with ID:', id);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
@@ -293,7 +287,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       setJournals(prevJournals => prevJournals.filter(journal => journal.topicId !== id));
       setResources(prevResources => prevResources.filter(resource => resource.topicId !== id));
       
-      console.log('Deleting topic with ID:', id);
       const { error } = await supabase
         .from('topics')
         .delete()
@@ -403,13 +396,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteMethod = async (id: string) => {
     try {
-      // Validate that id is a valid UUID
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid UUID format for method deletion:', id);
-        toast.error('Invalid method ID format');
-        return;
-      }
-
+      console.log('Deleting method with ID:', id);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
@@ -419,7 +407,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Optimistically update the UI
       setMethods(prevMethods => prevMethods.filter(method => method.id !== id));
       
-      console.log('Deleting method with ID:', id);
       const { error } = await supabase
         .from('learning_methods')
         .delete()
@@ -527,13 +514,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteJournal = async (id: string) => {
     try {
-      // Validate that id is a valid UUID
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid UUID format for journal deletion:', id);
-        toast.error('Invalid journal ID format');
-        return;
-      }
-
+      console.log('Deleting journal with ID:', id);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
@@ -543,7 +525,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Optimistically update the UI
       setJournals(prevJournals => prevJournals.filter(journal => journal.id !== id));
       
-      console.log('Deleting journal with ID:', id);
       const { error } = await supabase
         .from('journal_entries')
         .delete()
@@ -661,13 +642,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteResource = async (id: string) => {
     try {
-      // Validate that id is a valid UUID
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid UUID format for resource deletion:', id);
-        toast.error('Invalid resource ID format');
-        return;
-      }
-
+      console.log('Deleting resource with ID:', id);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
@@ -677,7 +653,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Optimistically update the UI
       setResources(prevResources => prevResources.filter(resource => resource.id !== id));
       
-      console.log('Deleting resource with ID:', id);
       const { error } = await supabase
         .from('resources')
         .delete()
@@ -782,13 +757,8 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteCategory = async (id: string) => {
     try {
-      // Validate that id is a valid UUID
-      if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-        console.error('Invalid UUID format for category deletion:', id);
-        toast.error('Invalid category ID format');
-        return;
-      }
-
+      console.log('Deleting category with ID:', id);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to delete data');
@@ -804,7 +774,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Optimistically update the UI
       setCategories(prevCategories => prevCategories.filter(category => category.id !== id));
       
-      console.log('Deleting category with ID:', id);
       const { error } = await supabase
         .from('categories')
         .delete()
