@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 250 80% 70%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 210 60% 98%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -98,4 +92,41 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Learning Hub Custom Styles */
+.learning-card {
+  @apply bg-white rounded-lg shadow-sm border border-hub-border p-4 transition-all hover:shadow-md;
+}
+
+.progress-bar {
+  @apply h-2 bg-hub-secondary rounded-full overflow-hidden;
+}
+
+.progress-value {
+  @apply h-full bg-hub-primary rounded-full;
+}
+
+.status-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-to-start {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.status-in-progress {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-learning {
+  @apply bg-indigo-100 text-indigo-800;
+}
+
+.status-review {
+  @apply bg-amber-100 text-amber-800;
+}
+
+.status-completed {
+  @apply bg-green-100 text-green-800;
 }
