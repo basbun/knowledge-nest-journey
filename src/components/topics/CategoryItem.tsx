@@ -39,6 +39,7 @@ const CategoryItem = ({
       <CategoryHeader
         categoryId={categoryId}
         categoryName={categoryName}
+        isActive={isActive}
         onAction={onCategoryAction}
         onDelete={onDeleteCategory}
       />

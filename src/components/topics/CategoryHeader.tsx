@@ -6,11 +6,12 @@ import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 interface CategoryHeaderProps {
   categoryId: string;
   categoryName: string;
+  isActive: boolean;
   onAction: (categoryId: string, action: 'up' | 'down' | 'toggle') => void;
   onDelete: (categoryId: string) => void;
 }
 
-const CategoryHeader = ({ categoryId, categoryName, onAction, onDelete }: CategoryHeaderProps) => {
+const CategoryHeader = ({ categoryId, categoryName, isActive, onAction, onDelete }: CategoryHeaderProps) => {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
       <div className="flex items-center gap-4 w-full sm:w-auto">
@@ -31,7 +32,7 @@ const CategoryHeader = ({ categoryId, categoryName, onAction, onDelete }: Catego
             <ArrowDown className="h-4 w-4" />
           </Button>
           <Switch
-            checked={true}
+            checked={isActive}
             onCheckedChange={() => onAction(categoryId, 'toggle')}
           />
         </div>

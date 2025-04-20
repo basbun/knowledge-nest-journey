@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
@@ -85,6 +86,19 @@ const TopicList = () => {
     }
   };
 
+  const handleDeleteCategory = (categoryId: string) => {
+    try {
+      deleteCategory(categoryId);
+      toast.success("Category deleted successfully");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to delete category");
+      }
+    }
+  };
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -150,7 +164,7 @@ const TopicList = () => {
           isActive={category.isActive}
           onTopicClick={handleTopicClick}
           onCategoryAction={handleCategoryAction}
-          onDeleteCategory={deleteCategory}
+          onDeleteCategory={handleDeleteCategory}
           onDragStart={setDraggedTopic}
           onDragOver={handleDragOver}
           onDrop={handleDrop}

@@ -130,9 +130,13 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const deleteCategory = (id: string) => {
-    if (topics.some(topic => topic.category === id)) {
+    // Check if there are any topics in this category
+    const hasTopics = topics.some(topic => topic.category === id);
+    
+    if (hasTopics) {
       throw new Error("Cannot delete category with existing topics");
     }
+    
     setCategories(categories.filter((category) => category.id !== id));
   };
 
