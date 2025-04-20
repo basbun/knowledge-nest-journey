@@ -128,7 +128,7 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setShowNewType(true)}
+              onClick={() => setShowNewCategory(true)}
             >
               New
             </Button>
