@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
@@ -12,6 +11,7 @@ import JournalList from '../journal/JournalList';
 import { cn } from '@/lib/utils';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TopicDetailsProps {
   topic: Topic;
@@ -21,6 +21,7 @@ interface TopicDetailsProps {
 const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
   const { deleteTopic } = useLearning();
   const [isDeleting, setIsDeleting] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleDelete = () => {
     deleteTopic(topic.id);
@@ -30,18 +31,14 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'To Start':
-        return 'status-to-start';
+      case 'Not Started':
+        return 'bg-gray-100 text-gray-800';
       case 'In Progress':
-        return 'status-in-progress';
-      case 'Learning':
-        return 'status-learning';
-      case 'Review':
-        return 'status-review';
+        return 'bg-blue-100 text-blue-800';
       case 'Completed':
-        return 'status-completed';
+        return 'bg-green-100 text-green-800';
       default:
-        return 'status-to-start';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -55,12 +52,12 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-start mb-6">
+    <div className={`space-y-4 ${isMobile ? 'px-0' : 'px-4'}`}>
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-hub-text">{topic.title}</h2>
-            <span className={cn('status-badge', getStatusClass(topic.status))}>
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
+            <h2 className="text-xl md:text-2xl font-bold text-hub-text">{topic.title}</h2>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(topic.status)}`}>
               {topic.status}
             </span>
           </div>

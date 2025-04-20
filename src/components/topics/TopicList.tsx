@@ -1,20 +1,23 @@
-
 import { useState } from 'react';
 import TopicCard from './TopicCard';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Edit, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 const TopicList = () => {
-  const { topics } = useLearning();
+  const { topics, deleteTopic } = useLearning();
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const handleTopicClick = (topic: Topic) => {
     setSelectedTopic(topic);
@@ -36,10 +39,17 @@ const TopicList = () => {
 
   const handleFormClose = () => {
     setIsFormOpen(false);
-    // If we were editing, go back to details view
     if (isEditMode && selectedTopic) {
       setIsDetailsOpen(true);
     }
+  };
+
+  const handleDeleteCategory = (category: string) => {
+    if (topics.some(topic => topic.category === category)) {
+      toast.error("Cannot delete category with existing topics");
+      return;
+    }
+    toast.success("Category deleted successfully");
   };
 
   const categories = [...new Set(topics.map(topic => topic.category))];
@@ -58,7 +68,19 @@ const TopicList = () => {
 
       {categories.map((category) => (
         <div key={category} className="mb-8">
-          <h3 className="text-xl font-semibold text-hub-text mb-4">{category}</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-hub-text">{category}</h3>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteCategory(category)}
+                className="text-red-500 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {topics
               .filter((topic) => topic.category === category)
@@ -83,9 +105,8 @@ const TopicList = () => {
         </div>
       )}
 
-      {/* Topic Details Dialog */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className={`${isMobile ? 'w-[95vw] p-4' : 'sm:max-w-[600px]'} overflow-y-auto max-h-[90vh]`}>
           <DialogHeader>
             <DialogTitle>Topic Details</DialogTitle>
           </DialogHeader>
@@ -98,9 +119,8 @@ const TopicList = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Topic Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={handleFormClose}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className={`${isMobile ? 'w-[95vw] p-4' : 'sm:max-w-[600px]'} overflow-y-auto max-h-[90vh]`}>
           <DialogHeader>
             <DialogTitle>{isEditMode ? 'Edit Topic' : 'Add New Topic'}</DialogTitle>
           </DialogHeader>
