@@ -15,7 +15,7 @@ interface TopicFormProps {
 }
 
 const TopicForm = ({ topic, onClose }: TopicFormProps) => {
-  const { addTopic, updateTopic, topics } = useLearning();
+  const { addTopic, updateTopic, categories } = useLearning();
   
   const [title, setTitle] = useState(topic?.title || '');
   const [description, setDescription] = useState(topic?.description || '');
@@ -27,7 +27,7 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
   const [newCategory, setNewCategory] = useState('');
   const [showNewCategory, setShowNewCategory] = useState(false);
 
-  const existingCategories = [...new Set(topics.map(t => t.category))];
+  const statuses: TopicStatus[] = ['Not Started', 'In Progress', 'Completed'];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,8 +71,6 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
     onClose();
   };
 
-  const statuses: TopicStatus[] = ['Not Started', 'In Progress', 'Completed'];
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-full sm:max-w-md mx-auto">
       <div className="grid grid-cols-1 gap-4">
@@ -109,9 +107,9 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {existingCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
