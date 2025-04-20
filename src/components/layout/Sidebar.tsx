@@ -1,9 +1,12 @@
+
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home } from 'lucide-react';
+import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
@@ -31,6 +34,18 @@ const Sidebar = () => {
     navigate(path);
     if (isMobile) {
       setMobileOpen(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/auth');
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error('Error logging out');
+      console.error('Logout error:', error);
     }
   };
 
@@ -97,6 +112,20 @@ const Sidebar = () => {
             );
           })}
         </nav>
+        
+        {/* Logout Button at the bottom */}
+        <div className="border-t border-hub-border p-2">
+          <button
+            onClick={handleLogout}
+            className={cn(
+              'flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary',
+              collapsed && !isMobile && 'justify-center px-2'
+            )}
+          >
+            <LogOut className={cn('h-5 w-5', collapsed && !isMobile ? 'mr-0' : 'mr-3')} />
+            {(!collapsed || isMobile) && <span>Logout</span>}
+          </button>
+        </div>
       </div>
 
       {isMobile && mobileOpen && (
