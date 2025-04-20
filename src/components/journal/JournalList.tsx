@@ -127,7 +127,7 @@ const JournalList = ({ topicId }: JournalListProps) => {
               
               <p className="text-hub-text whitespace-pre-line mb-3">{journal.content}</p>
               
-              {journal.tags.length > 0 && (
+              {journal.tags && journal.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {journal.tags.map((tag, index) => (
                     <Badge key={index} variant="outline" className="text-hub-text-muted text-xs">

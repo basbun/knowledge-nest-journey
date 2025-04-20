@@ -26,12 +26,18 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
   const [tags, setTags] = useState<string[]>(journal?.tags || []);
   const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
 
-  // Get all existing tags from all journals
+  // Get all existing tags from all journals with null/undefined checks
   const existingTags = useMemo(() => {
     const allTags = new Set<string>();
-    journals.forEach(journal => {
-      journal.tags.forEach(tag => allTags.add(tag));
-    });
+    if (journals && Array.isArray(journals)) {
+      journals.forEach(journal => {
+        if (journal && journal.tags && Array.isArray(journal.tags)) {
+          journal.tags.forEach(tag => {
+            if (tag) allTags.add(tag);
+          });
+        }
+      });
+    }
     return Array.from(allTags);
   }, [journals]);
 
@@ -123,7 +129,7 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
               <CommandInput placeholder="Search tags..." />
               <CommandEmpty>No tags found.</CommandEmpty>
               <CommandGroup>
-                {suggestedTags.map((tag) => (
+                {Array.isArray(suggestedTags) && suggestedTags.map((tag) => (
                   <CommandItem
                     key={tag}
                     onSelect={() => handleAddTag(tag)}

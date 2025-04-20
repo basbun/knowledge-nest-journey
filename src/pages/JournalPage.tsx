@@ -22,18 +22,22 @@ const JournalPage = () => {
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [journalToDelete, setJournalToDelete] = useState<string | null>(null);
 
-  // Extract all available tags
-  const allTags = [...new Set(journals.flatMap(journal => journal.tags))];
+  // Extract all available tags with null checks
+  const allTags = [...new Set(
+    journals
+      .filter(journal => journal.tags && Array.isArray(journal.tags))
+      .flatMap(journal => journal.tags)
+  )];
 
-  // Filter journals based on search and filters
+  // Filter journals based on search and filters with null checks
   const filteredJournals = journals
     .filter(journal => 
       (selectedTopicId === "all" || journal.topicId === selectedTopicId) &&
-      (selectedTagFilter === "all" || journal.tags.includes(selectedTagFilter)) &&
+      (selectedTagFilter === "all" || (journal.tags && journal.tags.includes(selectedTagFilter))) &&
       (
         searchTerm === "" || 
         journal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        journal.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        (journal.tags && Array.isArray(journal.tags) && journal.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
       )
     )
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -217,7 +221,7 @@ const JournalPage = () => {
               
               <p className="text-hub-text whitespace-pre-line mb-3">{journal.content}</p>
               
-              {journal.tags.length > 0 && (
+              {journal.tags && journal.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {journal.tags.map((tag, index) => (
                     <Badge 
