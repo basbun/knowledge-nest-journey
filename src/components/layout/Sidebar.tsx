@@ -43,7 +43,9 @@ const Sidebar = () => {
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-hub-border bg-white transition-all duration-300',
-          isMobile ? (mobileOpen ? 'translate-x-0' : '-translate-x-full') : (collapsed ? 'w-16' : 'w-64'),
+          isMobile 
+            ? (mobileOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64') 
+            : (collapsed ? 'w-16' : 'w-64'),
           isMobile && 'shadow-lg'
         )}
       >
@@ -54,7 +56,10 @@ const Sidebar = () => {
           {!isMobile && (
             <button
               onClick={toggleSidebar}
-              className="rounded p-1 hover:bg-hub-secondary"
+              className={cn(
+                "rounded p-1 hover:bg-hub-secondary",
+                collapsed && "w-full flex justify-center"
+              )}
             >
               {collapsed ? (
                 <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,10 +86,11 @@ const Sidebar = () => {
                   'flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-hub-muted text-hub-primary'
-                    : 'text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary'
+                    : 'text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary',
+                  collapsed && !isMobile && 'justify-center px-2'
                 )}
               >
-                <item.icon className={cn('mr-3 h-5 w-5', collapsed && !isMobile ? 'mx-auto' : '')} />
+                <item.icon className={cn('h-5 w-5', collapsed && !isMobile ? 'mr-0' : 'mr-3')} />
                 {(!collapsed || isMobile) && <span>{item.name}</span>}
               </Link>
             );
