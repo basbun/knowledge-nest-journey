@@ -16,7 +16,7 @@ const Sidebar = () => {
     { name: 'Dashboard', href: '/', icon: BookOpen },
     { name: 'Topics', href: '/topics', icon: List },
     { name: 'Journal', href: '/journal', icon: FileText },
-    { name: 'Resources', href: '/resources', icon: BookText },
+    { name: 'Resources', href: '/resources', icon: Globe },
   ];
 
   const toggleSidebar = () => {
