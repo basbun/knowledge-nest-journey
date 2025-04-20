@@ -28,12 +28,18 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
   const [tags, setTags] = useState<string[]>(resource?.tags || []);
   const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
 
-  // Get all existing tags from all resources
+  // Get all existing tags from all resources with null/undefined checks
   const existingTags = useMemo(() => {
     const allTags = new Set<string>();
-    resources.forEach(resource => {
-      resource.tags.forEach(tag => allTags.add(tag));
-    });
+    if (resources && Array.isArray(resources)) {
+      resources.forEach(resource => {
+        if (resource && resource.tags && Array.isArray(resource.tags)) {
+          resource.tags.forEach(tag => {
+            if (tag) allTags.add(tag);
+          });
+        }
+      });
+    }
     return Array.from(allTags);
   }, [resources]);
 

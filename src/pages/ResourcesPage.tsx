@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { useLearning } from "@/context/LearningContext";
@@ -20,14 +21,18 @@ const ResourcesPage = () => {
   const [selectedResource, setSelectedResource] = useState<string | null>(null);
   const [resourceToDelete, setResourceToDelete] = useState<string | null>(null);
 
-  // Extract all available tags
-  const allTags = [...new Set(resources.flatMap(resource => resource.tags))];
+  // Extract all available tags with null checks
+  const allTags = [...new Set(
+    resources
+      .filter(resource => resource.tags && Array.isArray(resource.tags))
+      .flatMap(resource => resource.tags)
+  )];
 
-  // Filter resources based on search and filters
+  // Filter resources based on search and filters with null checks
   const filteredResources = resources
     .filter(resource => 
       (selectedTopicId === "all" || resource.topicId === selectedTopicId) &&
-      (selectedTagFilter === "all" || resource.tags.includes(selectedTagFilter)) &&
+      (selectedTagFilter === "all" || (resource.tags && resource.tags.includes(selectedTagFilter))) &&
       (
         searchTerm === "" || 
         resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,23 +65,8 @@ const ResourcesPage = () => {
     toast.success('Resource deleted');
   };
 
-  const getResourceIcon = (resource: any) => {
-    // If the resource has a type, use that to determine the icon
-    if (resource.type) {
-      switch (resource.type.toLowerCase()) {
-        case 'article':
-          return FileText;
-        case 'tutorial':
-          return BookOpen;
-        case 'documentation':
-          return FileText;
-        case 'book':
-          return BookOpen;
-        default:
-          return Link;
-      }
-    }
-    // Otherwise, just return the Link icon
+  // Default icon for all resources
+  const getResourceIcon = () => {
     return Link;
   };
 
@@ -172,7 +162,7 @@ const ResourcesPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredResources.map((resource) => {
-            const ResourceIcon = getResourceIcon(resource);
+            const ResourceIcon = getResourceIcon();
             const topicName = topics.find(t => t.id === resource.topicId)?.title || "Unknown Topic";
             
             return (
@@ -234,11 +224,6 @@ const ResourcesPage = () => {
                     </div>
                     
                     <div className="flex items-center gap-2 mt-1 mb-2">
-                      {resource.type && (
-                        <span className="bg-hub-muted text-xs px-2 py-0.5 rounded text-hub-text-muted">
-                          {resource.type}
-                        </span>
-                      )}
                       <span className="text-xs bg-hub-secondary px-2 py-0.5 rounded text-hub-text-muted">
                         {topicName}
                       </span>

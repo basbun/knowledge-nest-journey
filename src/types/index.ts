@@ -42,7 +42,7 @@ export interface Resource {
   title: string;
   url?: string;
   notes?: string;
-  tags: string[];
+  tags: string[]; // This is always an array, even if empty
   type?: string; // Made optional
   createdAt: string;
   updatedAt: string;
