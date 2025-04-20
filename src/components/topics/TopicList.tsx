@@ -1,21 +1,23 @@
-
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
-import { Topic } from '@/types';
+import { Topic, TopicStatus } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { PlusIcon } from 'lucide-react';
 import CategoryItem from './CategoryItem';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const statusOrder = {
   'Not Started': 0,
   'In Progress': 1,
-  'Completed': 2
+  'Completed': 2,
+  'On Hold': 3,
+  'Archived': 4
 };
 
 const TopicList = () => {
@@ -37,9 +39,10 @@ const TopicList = () => {
   const [draggedTopic, setDraggedTopic] = useState<Topic | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const isMobile = useIsMobile();
+  const [selectedStatuses, setSelectedStatuses] = useState<TopicStatus[]>(['Not Started', 'In Progress', 'Completed']);
 
   const filteredAndSortedTopics = topics
-    .filter(topic => statusFilter === 'all' ? true : topic.status === statusFilter)
+    .filter(topic => selectedStatuses.length === 0 || selectedStatuses.includes(topic.status))
     .sort((a, b) => {
       return (statusOrder[a.status as keyof typeof statusOrder] || 0) - 
              (statusOrder[b.status as keyof typeof statusOrder] || 0);
@@ -113,25 +116,47 @@ const TopicList = () => {
 
   const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
 
+  const handleStatusToggle = (status: TopicStatus) => {
+    setSelectedStatuses(current =>
+      current.includes(status)
+        ? current.filter(s => s !== status)
+        : [...current, status]
+    );
+  };
+
+  const allStatuses: TopicStatus[] = [
+    'Not Started',
+    'In Progress',
+    'Completed',
+    'On Hold',
+    'Archived'
+  ];
+
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-2xl font-bold text-hub-text">Learning Topics</h2>
-        <div className="flex gap-4 w-full sm:w-auto">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="Not Started">Not Started</SelectItem>
-              <SelectItem value="In Progress">In Progress</SelectItem>
-              <SelectItem value="Completed">Completed</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <div className="flex flex-wrap gap-2 p-4 border rounded-md">
+            {allStatuses.map((status) => (
+              <div key={status} className="flex items-center space-x-2">
+                <Checkbox
+                  id={status}
+                  checked={selectedStatuses.includes(status)}
+                  onCheckedChange={() => handleStatusToggle(status)}
+                />
+                <label
+                  htmlFor={status}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {status}
+                </label>
+              </div>
+            ))}
+          </div>
           <Button
             onClick={handleAddTopic}
-            className="bg-hub-primary hover:bg-hub-primary/90"
+            className="bg-hub-primary hover:bg-hub-primary/90 whitespace-nowrap"
           >
             <PlusIcon className="mr-2 h-4 w-4" /> Add Topic
           </Button>

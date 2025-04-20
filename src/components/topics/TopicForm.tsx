@@ -27,7 +27,13 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
   const [newCategory, setNewCategory] = useState('');
   const [showNewCategory, setShowNewCategory] = useState(false);
 
-  const statuses: TopicStatus[] = ['Not Started', 'In Progress', 'Completed'];
+  const statuses: TopicStatus[] = [
+    'Not Started',
+    'In Progress',
+    'Completed',
+    'On Hold',
+    'Archived'
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

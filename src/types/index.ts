@@ -1,5 +1,4 @@
-
-export type TopicStatus = 'Not Started' | 'In Progress' | 'Completed';
+export type TopicStatus = 'Not Started' | 'In Progress' | 'Completed' | 'On Hold' | 'Archived';
 
 export interface Topic {
   id: string;
