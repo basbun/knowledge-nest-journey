@@ -1,7 +1,6 @@
-
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Topic, LearningMethod, JournalEntry, Resource, Category } from '@/types';
+import { Topic, LearningMethod, JournalEntry, Resource, Category, TopicStatus } from '@/types';
 
 export const useDataSync = (
   setTopics: (topics: Topic[]) => void,
@@ -70,7 +69,7 @@ export const useDataSync = (
         title: item.title,
         description: item.description || '',
         category: item.category,
-        status: item.status,
+        status: item.status as TopicStatus,
         progress: item.progress,
         startDate: item.start_date,
         targetEndDate: item.target_end_date,
