@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import TopicCard from './TopicCard';
 import { useLearning } from '@/context/LearningContext';
@@ -136,11 +137,16 @@ const TopicList = () => {
           </div>
           
           {category.isActive && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 grid-rows-[auto]">
               {topics
                 .filter((topic) => topic.category === category.id)
                 .map((topic) => (
-                  <TopicCard key={topic.id} topic={topic} onClick={handleTopicClick} />
+                  <TopicCard 
+                    key={topic.id} 
+                    topic={topic} 
+                    onClick={handleTopicClick} 
+                    className="h-full" 
+                  />
                 ))}
             </div>
           )}
