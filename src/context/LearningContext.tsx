@@ -29,7 +29,6 @@ interface LearningContextType {
 
 const LearningContext = createContext<LearningContextType | undefined>(undefined);
 
-// Initialize with example data instead of empty arrays
 const initialCategories: Category[] = [
   { id: '1', name: 'Web Development', order: 0, isActive: true },
   { id: '2', name: 'Languages', order: 1, isActive: true },
@@ -263,7 +262,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       order: categories.length,
       isActive: true,
     };
-    setCategories([...categories, newCategory]);
+    setCategories(prevCategories => [...prevCategories, newCategory]);
   };
 
   const updateCategory = (id: string, updates: Partial<Category>) => {
@@ -294,7 +293,6 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     const swapIndex = direction === 'up' ? index - 1 : index + 1;
     [newCategories[index], newCategories[swapIndex]] = [newCategories[swapIndex], newCategories[index]];
     
-    // Update order values
     newCategories.forEach((cat, idx) => {
       cat.order = idx;
     });

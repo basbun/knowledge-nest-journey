@@ -5,7 +5,7 @@ import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { PlusIcon, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { PlusIcon, ArrowUp, ArrowDown, Trash2, MoveVertical } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TopicDetails from './TopicDetails';
 import TopicForm from './TopicForm';
@@ -19,13 +19,15 @@ const TopicList = () => {
     reorderCategory,
     toggleCategoryActive,
     addCategory,
-    deleteCategory 
+    deleteCategory,
+    updateTopic 
   } = useLearning();
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [draggedTopic, setDraggedTopic] = useState<Topic | null>(null);
   const isMobile = useIsMobile();
 
   const handleTopicClick = (topic: Topic) => {
@@ -78,6 +80,23 @@ const TopicList = () => {
     }
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (topic: Topic) => {
+    setDraggedTopic(topic);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (categoryId: string) => {
+    if (draggedTopic && draggedTopic.category !== categoryId) {
+      updateTopic(draggedTopic.id, { category: categoryId });
+      toast.success(`Topic moved to ${categories.find(c => c.id === categoryId)?.name || 'new category'}`);
+      setDraggedTopic(null);
+    }
+  };
+
   const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
 
   return (
@@ -110,7 +129,12 @@ const TopicList = () => {
       </div>
 
       {sortedCategories.map((category) => (
-        <div key={category.id} className="mb-8">
+        <div 
+          key={category.id} 
+          className="mb-8"
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop(category.id)}
+        >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div className="flex items-center gap-4 w-full sm:w-auto">
               <h3 className="text-xl font-semibold text-hub-text">{category.name}</h3>
@@ -150,12 +174,21 @@ const TopicList = () => {
               {topics
                 .filter((topic) => topic.category === category.id)
                 .map((topic) => (
-                  <TopicCard 
+                  <div 
                     key={topic.id} 
-                    topic={topic} 
-                    onClick={handleTopicClick} 
-                    className="h-full" 
-                  />
+                    draggable
+                    onDragStart={() => handleDragStart(topic)}
+                    className="relative"
+                  >
+                    <div className="absolute top-2 right-2 z-10 cursor-grab hover:scale-110 transition-transform">
+                      <MoveVertical className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <TopicCard 
+                      topic={topic} 
+                      onClick={handleTopicClick} 
+                      className="h-full" 
+                    />
+                  </div>
                 ))}
             </div>
           )}

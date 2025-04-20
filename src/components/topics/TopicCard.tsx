@@ -15,18 +15,14 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
   
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'To Start':
-        return 'status-to-start';
+      case 'Not Started':
+        return 'bg-gray-100 text-gray-800';
       case 'In Progress':
-        return 'status-in-progress';
-      case 'Learning':
-        return 'status-learning';
-      case 'Review':
-        return 'status-review';
+        return 'bg-blue-100 text-blue-800';
       case 'Completed':
-        return 'status-completed';
+        return 'bg-green-100 text-green-800';
       default:
-        return 'status-to-start';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -48,14 +44,14 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
     <div 
       className={cn(
         "learning-card cursor-pointer hover:transform hover:scale-[1.02] transition-all flex flex-col",
-        "h-full",
+        "h-full border border-gray-200 rounded-lg p-4 bg-white shadow-sm",
         className
       )}
       onClick={() => onClick(topic)}
     >
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-lg text-hub-text flex-grow truncate">{topic.title}</h3>
-        <span className={cn('status-badge ml-2', getStatusClass(topic.status))}>
+        <span className={cn('status-badge ml-2 px-2 py-1 rounded-full text-xs', getStatusClass(topic.status))}>
           {topic.status}
         </span>
       </div>
@@ -68,8 +64,11 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
             <span>Progress</span>
             <span>{topic.progress}%</span>
           </div>
-          <div className="progress-bar">
-            <div className="progress-value" style={{ width: `${topic.progress}%` }}></div>
+          <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-hub-primary rounded-full" 
+              style={{ width: `${topic.progress}%` }}
+            ></div>
           </div>
         </div>
         
