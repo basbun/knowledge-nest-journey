@@ -21,7 +21,7 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
   const [title, setTitle] = useState(topic?.title || '');
   const [description, setDescription] = useState(topic?.description || '');
   const [category, setCategory] = useState(topic?.category || '');
-  const [status, setStatus] = useState<TopicStatus>(topic?.status || 'To Start');
+  const [status, setStatus] = useState<TopicStatus>(topic?.status || 'Not Started');
   const [progress, setProgress] = useState(topic?.progress || 0);
   const [startDate, setStartDate] = useState(topic?.startDate || '');
   const [targetEndDate, setTargetEndDate] = useState(topic?.targetEndDate || '');
@@ -76,7 +76,7 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
     onClose();
   };
 
-  const statuses: TopicStatus[] = ['To Start', 'In Progress', 'Learning', 'Review', 'Completed'];
+  const statuses: TopicStatus[] = ['Not Started', 'In Progress', 'Completed'];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

@@ -15,14 +15,10 @@ const Dashboard = () => {
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'To Start':
+      case 'Not Started':
         return 'status-to-start';
       case 'In Progress':
         return 'status-in-progress';
-      case 'Learning':
-        return 'status-learning';
-      case 'Review':
-        return 'status-review';
       case 'Completed':
         return 'status-completed';
       default:
@@ -33,19 +29,15 @@ const Dashboard = () => {
   // Get stats
   const totalTopics = topics.length;
   const completedTopics = topics.filter(topic => topic.status === 'Completed').length;
-  const inProgressTopics = topics.filter(topic => 
-    ['In Progress', 'Learning', 'Review'].includes(topic.status)
-  ).length;
+  const inProgressTopics = topics.filter(topic => topic.status === 'In Progress').length;
   const totalJournals = journals.length;
   const totalResources = resources.length;
   const totalMethods = methods.length;
 
   // Group topics by status
   const statusGroups: Record<TopicStatus, Topic[]> = {
-    'To Start': [],
+    'Not Started': [],
     'In Progress': [],
-    'Learning': [],
-    'Review': [],
     'Completed': []
   };
 
