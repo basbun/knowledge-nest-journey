@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { useLearning } from "@/context/LearningContext";
@@ -18,21 +17,17 @@ const JournalPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTopicId, setSelectedTopicId] = useState<string | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | "all">("all");
   const [selectedTagFilter, setSelectedTagFilter] = useState<string | "all">("all");
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [journalToDelete, setJournalToDelete] = useState<string | null>(null);
 
-  // Extract all available categories and tags
-  const allCategories = [...new Set(journals.map(journal => journal.category))];
+  // Extract all available tags
   const allTags = [...new Set(journals.flatMap(journal => journal.tags))];
 
   // Filter journals based on search and filters
   const filteredJournals = journals
     .filter(journal => 
       (selectedTopicId === "all" || journal.topicId === selectedTopicId) &&
-      (selectedCategory === "all" || journal.category === selectedCategory) &&
-      (selectedTagFilter === "all" || journal.tags.includes(selectedTagFilter)) &&
       (
         searchTerm === "" || 
         journal.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,17 +74,15 @@ const JournalPage = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <Input
-              placeholder="Search journal entries..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <Input
+            placeholder="Search journal entries..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
           
-          <div>
+          <div className="flex gap-2">
             <Select
               value={selectedTopicId}
               onValueChange={setSelectedTopicId}
@@ -106,27 +99,6 @@ const JournalPage = () => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {allCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
             
             <Button 
               onClick={() => handleAddJournal()}

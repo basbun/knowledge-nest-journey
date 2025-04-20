@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 
@@ -20,13 +19,13 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
   const { addJournal, updateJournal } = useLearning();
   
   const [content, setContent] = useState(journal?.content || '');
-  const [category, setCategory] = useState(journal?.category || '');
+  const [label, setLabel] = useState(journal?.category || '');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(journal?.tags || []);
-  const [newCategory, setNewCategory] = useState('');
-  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newLabel, setNewLabel] = useState('');
+  const [showNewLabel, setShowNewLabel] = useState(false);
 
-  const journalCategories = [
+  const journalLabels = [
     'Key Takeaways',
     'Problem Solving',
     'Questions',
@@ -64,17 +63,13 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
       return;
     }
     
-    const finalCategory = showNewCategory ? newCategory : category;
-    if (!finalCategory) {
-      toast.error('Please select or create a category');
-      return;
-    }
+    const finalLabel = showNewLabel ? newLabel : label;
     
     if (journal) {
       // Update existing journal
       updateJournal(journal.id, {
         content,
-        category: finalCategory,
+        category: finalLabel || '', // Allow empty label
         tags,
       });
       toast.success('Journal entry updated successfully');
@@ -83,7 +78,7 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
       addJournal({
         topicId,
         content,
-        category: finalCategory,
+        category: finalLabel || '', // Allow empty label
         tags,
       });
       toast.success('Journal entry added successfully');
@@ -107,28 +102,19 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
-        {!showNewCategory ? (
+        <Label>Label (optional)</Label>
+        {!showNewLabel ? (
           <div className="flex gap-2">
-            <Select
-              value={category}
-              onValueChange={setCategory}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {journalCategories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Enter a label"
+              className="w-full"
+            />
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setShowNewCategory(true)}
+              onClick={() => setShowNewLabel(true)}
             >
               New
             </Button>
@@ -136,15 +122,14 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
         ) : (
           <div className="flex gap-2">
             <Input
-              id="newCategory"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              placeholder="Enter new category"
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              placeholder="Enter new label"
             />
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setShowNewCategory(false)}
+              onClick={() => setShowNewLabel(false)}
             >
               Cancel
             </Button>
@@ -206,3 +191,4 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
 };
 
 export default JournalForm;
+
