@@ -26,7 +26,6 @@ const Dashboard = () => {
     }
   };
 
-  // Get stats
   const totalTopics = topics.length;
   const completedTopics = topics.filter(topic => topic.status === 'Completed').length;
   const inProgressTopics = topics.filter(topic => topic.status === 'In Progress').length;
@@ -34,7 +33,6 @@ const Dashboard = () => {
   const totalResources = resources.length;
   const totalMethods = methods.length;
 
-  // Group topics by status
   const statusGroups: Record<TopicStatus, Topic[]> = {
     'Not Started': [],
     'In Progress': [],
@@ -52,9 +50,9 @@ const Dashboard = () => {
         <p className="text-hub-text-muted">Track, reflect, and grow your knowledge</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
-          <h3 className="text-lg font-medium text-hub-text-muted mb-2">Total Topics</h3>
+          <h3 className="text-lg font-medium text-hub-text-muted mb-2">Topics</h3>
           <div className="flex items-end justify-between">
             <span className="text-3xl font-bold text-hub-primary">{totalTopics}</span>
             <Link to="/topics">
@@ -84,71 +82,81 @@ const Dashboard = () => {
             </span>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
-          <h3 className="text-lg font-medium text-hub-text-muted mb-2">Activities</h3>
-          <div className="flex items-end justify-between">
-            <div className="flex flex-col">
-              <div className="flex gap-2">
-                <span className="text-hub-accent">{totalJournals}</span>
-                <span className="text-hub-text-muted">Journal Entries</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-hub-accent">{totalResources}</span>
-                <span className="text-hub-text-muted">Resources</span>
-              </div>
-            </div>
-            <Button variant="outline" className="text-hub-primary border-hub-primary" onClick={() => setIsFormOpen(true)}>
-              <PlusIcon className="h-4 w-4 mr-1" /> Add
-            </Button>
-          </div>
-        </div>
       </div>
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-hub-text">Topics by Status</h2>
-          <Link to="/topics">
-            <Button variant="link" className="text-hub-primary">
-              View All
-            </Button>
-          </Link>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+        <div className="lg:col-span-3">
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg md:text-xl font-semibold text-hub-text">Topics by Status</h2>
+              <Link to="/topics">
+                <Button variant="link" className="text-hub-primary">
+                  View All
+                </Button>
+              </Link>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {Object.entries(statusGroups).map(([status, statusTopics]) => (
-            <div key={status} className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
-              <div className="flex items-center mb-3">
-                <span className={cn('status-badge mr-2', getStatusClass(status))}>
-                  {status}
-                </span>
-                <span className="text-sm text-hub-text-muted">
-                  {statusTopics.length} {statusTopics.length === 1 ? 'topic' : 'topics'}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {Object.entries(statusGroups).map(([status, statusTopics]) => (
+                <div key={status} className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
+                  <div className="flex items-center mb-3">
+                    <span className={cn('status-badge mr-2', getStatusClass(status))}>
+                      {status}
+                    </span>
+                    <span className="text-sm text-hub-text-muted">
+                      {statusTopics.length} {statusTopics.length === 1 ? 'topic' : 'topics'}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {statusTopics.slice(0, 3).map(topic => (
+                      <Link key={topic.id} to="/topics" className="block">
+                        <div className="p-2 hover:bg-gray-50 rounded-md transition-colors">
+                          <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
+                          <div className="flex justify-between text-xs text-hub-text-muted">
+                            <span>{topic.category}</span>
+                            <span>{topic.progress}%</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                    {statusTopics.length > 3 && (
+                      <Link to="/topics" className="text-hub-primary text-sm hover:underline block text-center mt-2">
+                        + {statusTopics.length - 3} more
+                      </Link>
+                    )}
+                    {statusTopics.length === 0 && (
+                      <p className="text-hub-text-muted text-sm py-2 text-center">No topics</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4">
+            <h3 className="text-lg font-medium text-hub-text-muted mb-4">Activities Overview</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-hub-text-muted">Journal Entries</span>
+                <span className="text-hub-accent font-medium">{totalJournals}</span>
               </div>
-              <div className="space-y-2">
-                {statusTopics.slice(0, 3).map(topic => (
-                  <Link key={topic.id} to="/topics" className="block">
-                    <div className="p-2 hover:bg-gray-50 rounded-md transition-colors">
-                      <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
-                      <div className="flex justify-between text-xs text-hub-text-muted">
-                        <span>{topic.category}</span>
-                        <span>{topic.progress}%</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-                {statusTopics.length > 3 && (
-                  <Link to="/topics" className="text-hub-primary text-sm hover:underline block text-center mt-2">
-                    + {statusTopics.length - 3} more
-                  </Link>
-                )}
-                {statusTopics.length === 0 && (
-                  <p className="text-hub-text-muted text-sm py-2 text-center">No topics</p>
-                )}
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-hub-text-muted">Resources</span>
+                <span className="text-hub-accent font-medium">{totalResources}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-hub-text-muted">Methods</span>
+                <span className="text-hub-accent font-medium">{totalMethods}</span>
               </div>
             </div>
-          ))}
+            <Button 
+              variant="outline" 
+              className="w-full mt-4 text-hub-primary border-hub-primary" 
+              onClick={() => setIsFormOpen(true)}
+            >
+              <PlusIcon className="h-4 w-4 mr-1" /> Add New Topic
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -205,7 +213,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Topic Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>

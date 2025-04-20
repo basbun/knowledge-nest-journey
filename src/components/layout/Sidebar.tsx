@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BookOpen, BookText, FileText, List, Menu, X } from 'lucide-react';
@@ -7,7 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
 
 const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -27,18 +26,14 @@ const Sidebar = () => {
     }
   };
 
-  // This function will be used when clicking navigation links
   const handleNavClick = () => {
-    // Only close the sidebar on mobile
     if (isMobile) {
       setMobileOpen(false);
     }
-    // Don't change the collapse state on desktop
   };
 
   return (
     <>
-      {/* Mobile Menu Button */}
       {isMobile && (
         <Button
           variant="ghost"
@@ -107,7 +102,6 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {/* Mobile Overlay */}
       {isMobile && mobileOpen && (
         <div 
           className="fixed inset-0 bg-black/20 z-30"
