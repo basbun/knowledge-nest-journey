@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { useLearning } from "@/context/LearningContext";
@@ -10,24 +9,25 @@ import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const ResourcesPage = () => {
   const { resources, topics, deleteResource } = useLearning();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTopicId, setSelectedTopicId] = useState<string | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState<string | "all">("all");
+  const [selectedTagFilter, setSelectedTagFilter] = useState<string | "all">("all");
   const [selectedResource, setSelectedResource] = useState<string | null>(null);
   const [resourceToDelete, setResourceToDelete] = useState<string | null>(null);
 
-  // Extract all available types
-  const allTypes = [...new Set(resources.map(resource => resource.type))];
+  // Extract all available tags
+  const allTags = [...new Set(resources.flatMap(resource => resource.tags))];
 
   // Filter resources based on search and filters
   const filteredResources = resources
     .filter(resource => 
       (selectedTopicId === "all" || resource.topicId === selectedTopicId) &&
-      (selectedType === "all" || resource.type === selectedType) &&
+      (selectedTagFilter === "all" || resource.tags.includes(selectedTagFilter)) &&
       (
         searchTerm === "" || 
         resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,19 +60,24 @@ const ResourcesPage = () => {
     toast.success('Resource deleted');
   };
 
-  const getResourceIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'article':
-        return FileText;
-      case 'tutorial':
-        return BookOpen;
-      case 'documentation':
-        return FileText;
-      case 'book':
-        return BookOpen;
-      default:
-        return Link;
+  const getResourceIcon = (resource: any) => {
+    // If the resource has a type, use that to determine the icon
+    if (resource.type) {
+      switch (resource.type.toLowerCase()) {
+        case 'article':
+          return FileText;
+        case 'tutorial':
+          return BookOpen;
+        case 'documentation':
+          return FileText;
+        case 'book':
+          return BookOpen;
+        default:
+          return Link;
+      }
     }
+    // Otherwise, just return the Link icon
+    return Link;
   };
 
   const selectedResourceData = resources.find(resource => resource.id === selectedResource);
@@ -116,24 +121,26 @@ const ResourcesPage = () => {
           </div>
           
           <div className="flex gap-2">
-            <div className="flex-1">
-              <Select
-                value={selectedType}
-                onValueChange={setSelectedType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {allTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {allTags.length > 0 && (
+              <div className="flex-1">
+                <Select
+                  value={selectedTagFilter}
+                  onValueChange={setSelectedTagFilter}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tags</SelectItem>
+                    {allTags.map((tag) => (
+                      <SelectItem key={tag} value={tag}>
+                        #{tag}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <Button 
               onClick={() => handleAddResource()}
@@ -165,7 +172,7 @@ const ResourcesPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredResources.map((resource) => {
-            const ResourceIcon = getResourceIcon(resource.type);
+            const ResourceIcon = getResourceIcon(resource);
             const topicName = topics.find(t => t.id === resource.topicId)?.title || "Unknown Topic";
             
             return (
@@ -227,9 +234,11 @@ const ResourcesPage = () => {
                     </div>
                     
                     <div className="flex items-center gap-2 mt-1 mb-2">
-                      <span className="bg-hub-muted text-xs px-2 py-0.5 rounded text-hub-text-muted">
-                        {resource.type}
-                      </span>
+                      {resource.type && (
+                        <span className="bg-hub-muted text-xs px-2 py-0.5 rounded text-hub-text-muted">
+                          {resource.type}
+                        </span>
+                      )}
                       <span className="text-xs bg-hub-secondary px-2 py-0.5 rounded text-hub-text-muted">
                         {topicName}
                       </span>
@@ -248,6 +257,21 @@ const ResourcesPage = () => {
                       >
                         <ExternalLink className="h-3 w-3 mr-1" /> Visit Resource
                       </a>
+                    )}
+                    
+                    {resource.tags && resource.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {resource.tags.map((tag: string, index: number) => (
+                          <Badge 
+                            key={index} 
+                            variant="outline" 
+                            className="text-hub-text-muted text-xs"
+                            onClick={() => setSelectedTagFilter(tag === selectedTagFilter ? "all" : tag)}
+                          >
+                            #{tag}
+                          </Badge>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>

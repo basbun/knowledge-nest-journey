@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
@@ -16,7 +15,6 @@ const Dashboard = () => {
   const [isActivityDialogOpen, setIsActivityDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Helper function to get category name from ID
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name : "Uncategorized";
@@ -63,7 +61,6 @@ const Dashboard = () => {
         <p className="text-hub-text-muted">Track, reflect, and grow your knowledge</p>
       </div>
 
-      {/* First row - Stats cards with consistent width */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 w-full">
         <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Topics</h3>
@@ -100,7 +97,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Second row - Topics container with consistent width */}
       <div className="w-full mb-6">
         <div className="w-full">
           <div className="mb-6">
@@ -194,7 +190,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Third row - Recent Activity with consistent width */}
       <div className="w-full mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-hub-text">Recent Activity</h2>
@@ -211,9 +206,11 @@ const Dashboard = () => {
             >
               <div className="flex justify-between items-start mb-1">
                 <div className="flex items-center">
-                  <span className="bg-hub-muted text-xs px-2.5 py-1 rounded text-hub-text-muted mr-2">
-                    {journal.category}
-                  </span>
+                  {journal.category && (
+                    <span className="bg-hub-muted text-xs px-2.5 py-1 rounded text-hub-text-muted mr-2">
+                      {journal.category}
+                    </span>
+                  )}
                   <span className="text-xs text-hub-text-muted">
                     {new Date(journal.createdAt).toLocaleDateString()}
                   </span>

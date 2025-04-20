@@ -73,8 +73,8 @@ export const initialJournals: JournalEntry[] = [
     id: '1',
     topicId: '1',
     content: 'Learned about React hooks today. useState and useEffect are powerful tools for managing component state and side effects.',
-    category: 'Progress Update',
     tags: ['react', 'hooks', 'frontend'],
+    category: 'Progress Update', // Now optional but still included for existing data
     createdAt: '2024-03-10T15:20:00Z',
     updatedAt: '2024-03-10T15:20:00Z',
   },
@@ -82,8 +82,8 @@ export const initialJournals: JournalEntry[] = [
     id: '2',
     topicId: '3',
     content: 'Completed the UI/UX course! Key takeaways: Always design with user needs in mind, test early and often, and iterate based on feedback.',
-    category: 'Reflection',
     tags: ['design', 'ux', 'completion'],
+    category: 'Reflection', // Now optional but still included for existing data
     createdAt: '2024-03-15T16:45:00Z',
     updatedAt: '2024-03-15T16:45:00Z',
   }
@@ -94,9 +94,10 @@ export const initialResources: Resource[] = [
     id: '1',
     topicId: '1',
     title: 'React Official Documentation',
-    type: 'Documentation',
     url: 'https://react.dev',
     notes: 'Comprehensive guide to React concepts and APIs',
+    tags: ['documentation', 'react'],
+    type: 'Documentation', // Now optional but still included for existing data
     createdAt: '2024-03-01T11:00:00Z',
     updatedAt: '2024-03-01T11:00:00Z',
   },
@@ -104,8 +105,9 @@ export const initialResources: Resource[] = [
     id: '2',
     topicId: '2',
     title: 'Japanese Learning Sheet',
-    type: 'Study Material',
     notes: 'Hiragana and Katakana practice sheets with common phrases',
+    tags: ['japanese', 'practice'],
+    type: 'Study Material', // Now optional but still included for existing data
     createdAt: '2024-03-20T09:30:00Z',
     updatedAt: '2024-03-20T09:30:00Z',
   },
@@ -113,9 +115,10 @@ export const initialResources: Resource[] = [
     id: '3',
     topicId: '3',
     title: 'UI Design Principles Guide',
-    type: 'Article',
     url: 'https://example.com/ui-principles',
     notes: 'Comprehensive overview of fundamental UI design principles',
+    tags: ['design', 'ui'],
+    type: 'Article', // Now optional but still included for existing data
     createdAt: '2024-02-05T13:20:00Z',
     updatedAt: '2024-02-05T13:20:00Z',
   }

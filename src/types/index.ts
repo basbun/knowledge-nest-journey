@@ -31,6 +31,7 @@ export interface JournalEntry {
   topicId: string;
   content: string;
   tags: string[];
+  category?: string; // Made optional
   createdAt: string;
   updatedAt: string;
 }
@@ -42,6 +43,7 @@ export interface Resource {
   url?: string;
   notes?: string;
   tags: string[];
+  type?: string; // Made optional
   createdAt: string;
   updatedAt: string;
 }
