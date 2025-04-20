@@ -1,11 +1,11 @@
+import React, { useState } from 'react';
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TopicForm from "@/components/topics/TopicForm";
-import { useNavigate } from "react-router-dom";
 import { Topic, TopicStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -264,7 +264,7 @@ const Dashboard = () => {
           </DialogHeader>
           <div className="space-y-4 p-4">
             <h3 className="text-lg font-medium">Choose activity type:</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Button 
                 variant="outline" 
                 className="flex flex-col h-28 p-4 items-center justify-center gap-2"
@@ -286,17 +286,6 @@ const Dashboard = () => {
               >
                 <PlusIcon className="h-6 w-6" />
                 <span>Resource</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="flex flex-col h-28 p-4 items-center justify-center gap-2"
-                onClick={() => {
-                  setIsActivityDialogOpen(false);
-                  handleNavigation('/topics');
-                }}
-              >
-                <PlusIcon className="h-6 w-6" />
-                <span>Learning Method</span>
               </Button>
             </div>
           </div>
