@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Topic, LearningMethod, JournalEntry, Resource, TopicStatus } from '../types';
+import { Topic, LearningMethod, JournalEntry, Resource, Category } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface LearningContextType {
@@ -19,6 +19,12 @@ interface LearningContextType {
   addResource: (resource: Omit<Resource, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateResource: (id: string, updates: Partial<Resource>) => void;
   deleteResource: (id: string) => void;
+  categories: Category[];
+  addCategory: (name: string) => void;
+  updateCategory: (id: string, updates: Partial<Category>) => void;
+  deleteCategory: (id: string) => void;
+  reorderCategory: (id: string, direction: 'up' | 'down') => void;
+  toggleCategoryActive: (id: string) => void;
 }
 
 const LearningContext = createContext<LearningContextType | undefined>(undefined);
@@ -34,6 +40,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [methods, setMethods] = useState<LearningMethod[]>(initialMethods);
   const [journals, setJournals] = useState<JournalEntry[]>(initialJournals);
   const [resources, setResources] = useState<Resource[]>(initialResources);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const addTopic = (topic: Omit<Topic, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newTopic: Topic = {
@@ -134,6 +141,60 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     setResources(resources.filter((resource) => resource.id !== id));
   };
 
+  const addCategory = (name: string) => {
+    const newCategory: Category = {
+      id: uuidv4(),
+      name,
+      order: categories.length,
+      isActive: true,
+    };
+    setCategories([...categories, newCategory]);
+  };
+
+  const updateCategory = (id: string, updates: Partial<Category>) => {
+    setCategories(
+      categories.map((category) =>
+        category.id === id ? { ...category, ...updates } : category
+      )
+    );
+  };
+
+  const deleteCategory = (id: string) => {
+    if (topics.some(topic => topic.category === id)) {
+      throw new Error("Cannot delete category with existing topics");
+    }
+    setCategories(categories.filter((category) => category.id !== id));
+  };
+
+  const reorderCategory = (id: string, direction: 'up' | 'down') => {
+    const index = categories.findIndex(c => c.id === id);
+    if (
+      (direction === 'up' && index === 0) || 
+      (direction === 'down' && index === categories.length - 1)
+    ) {
+      return;
+    }
+
+    const newCategories = [...categories];
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    [newCategories[index], newCategories[swapIndex]] = [newCategories[swapIndex], newCategories[index]];
+    
+    // Update order values
+    newCategories.forEach((cat, idx) => {
+      cat.order = idx;
+    });
+    
+    setCategories(newCategories);
+  };
+
+  const toggleCategoryActive = (id: string) => {
+    setCategories(
+      categories.map((category) =>
+        category.id === id ? { ...category, isActive: !category.isActive } : category
+      )
+    );
+  };
+
   return (
     <LearningContext.Provider
       value={{
@@ -153,6 +214,12 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         addResource,
         updateResource,
         deleteResource,
+        categories,
+        addCategory,
+        updateCategory,
+        deleteCategory,
+        reorderCategory,
+        toggleCategoryActive,
       }}
     >
       {children}

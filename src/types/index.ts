@@ -45,3 +45,10 @@ export interface Resource {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+  order: number;
+  isActive: boolean;
+}
