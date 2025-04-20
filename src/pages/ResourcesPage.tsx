@@ -25,14 +25,14 @@ const ResourcesPage = () => {
   const allTags = [...new Set(
     resources
       .filter(resource => resource.tags && Array.isArray(resource.tags))
-      .flatMap(resource => resource.tags)
+      .flatMap(resource => resource.tags ? resource.tags.filter(tag => tag) : [])
   )];
 
   // Filter resources based on search and filters with null checks
   const filteredResources = resources
     .filter(resource => 
       (selectedTopicId === "all" || resource.topicId === selectedTopicId) &&
-      (selectedTagFilter === "all" || (resource.tags && resource.tags.includes(selectedTagFilter))) &&
+      (selectedTagFilter === "all" || (resource.tags && Array.isArray(resource.tags) && resource.tags.includes(selectedTagFilter))) &&
       (
         searchTerm === "" || 
         resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

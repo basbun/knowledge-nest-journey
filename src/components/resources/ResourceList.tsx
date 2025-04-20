@@ -102,7 +102,7 @@ const ResourceList = ({ topicId }: ResourceListProps) => {
                         <p className="text-sm text-hub-text-muted mt-2 line-clamp-2">{resource.notes}</p>
                       )}
                       
-                      {resource.tags.length > 0 && (
+                      {resource.tags && resource.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {resource.tags.map((tag, index) => (
                             <Badge key={index} variant="outline" className="text-hub-text-muted text-xs">

@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Tag } from 'lucide-react';
@@ -26,7 +24,6 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
   const [notes, setNotes] = useState(resource?.notes || '');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(resource?.tags || []);
-  const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
 
   // Get all existing tags from all resources with null/undefined checks
   const existingTags = useMemo(() => {
@@ -43,25 +40,34 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
     return Array.from(allTags);
   }, [resources]);
 
-  // Filter suggestions based on input
+  // Filter suggestions based on input with safety checks
   const suggestedTags = useMemo(() => {
-    if (!tagInput) return existingTags;
+    if (!tagInput) return existingTags || [];
+    if (!existingTags || !Array.isArray(existingTags)) return [];
+    if (!tags || !Array.isArray(tags)) return existingTags;
+    
     return existingTags.filter(tag => 
-      tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+      tag && tag.toLowerCase().includes(tagInput.toLowerCase()) &&
       !tags.includes(tag)
     );
   }, [tagInput, existingTags, tags]);
 
   const handleAddTag = (newTag: string) => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
+    if (newTag && newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()]);
       setTagInput('');
-      setIsTagPopoverOpen(false);
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      e.preventDefault();
+      handleAddTag(tagInput);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -77,7 +83,7 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
         title,
         url: url || undefined,
         notes: notes || undefined,
-        tags,
+        tags: tags || [],
       });
       toast.success('Resource updated successfully');
     } else {
@@ -86,7 +92,7 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
         title,
         url: url || undefined,
         notes: notes || undefined,
-        tags,
+        tags: tags || [],
       });
       toast.success('Resource added successfully');
     }
@@ -108,46 +114,27 @@ const ResourceForm = ({ topicId, resource, onClose }: ResourceFormProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="tags">Tags</Label>
-        <Popover open={isTagPopoverOpen} onOpenChange={setIsTagPopoverOpen}>
-          <PopoverTrigger asChild>
-            <div className="flex gap-2">
-              <Input
-                id="tags"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                placeholder="Add tags..."
-                className="flex-1"
-              />
-              <Button 
-                type="button" 
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Tag className="h-4 w-4" />
-                Add
-              </Button>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Search tags..." />
-              <CommandEmpty>No tags found.</CommandEmpty>
-              <CommandGroup>
-                {suggestedTags.map((tag) => (
-                  <CommandItem
-                    key={tag}
-                    onSelect={() => handleAddTag(tag)}
-                    className="cursor-pointer"
-                  >
-                    {tag}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <div className="flex gap-2">
+          <Input
+            id="tags"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagInputKeyDown}
+            placeholder="Add tags..."
+            className="flex-1"
+          />
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={() => handleAddTag(tagInput)}
+            className="flex items-center gap-2"
+          >
+            <Tag className="h-4 w-4" />
+            Add
+          </Button>
+        </div>
         
-        {tags.length > 0 && (
+        {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {tags.map((tag, index) => (
               <Badge 
