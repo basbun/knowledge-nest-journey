@@ -27,6 +27,15 @@ const Sidebar = () => {
     }
   };
 
+  // This function will be used when clicking navigation links
+  const handleNavClick = () => {
+    // Only close the sidebar on mobile
+    if (isMobile) {
+      setMobileOpen(false);
+    }
+    // Don't change the collapse state on desktop
+  };
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -81,7 +90,7 @@ const Sidebar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                onClick={() => isMobile && setMobileOpen(false)}
+                onClick={handleNavClick}
                 className={cn(
                   'flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
