@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic, TopicStatus } from '@/types';
@@ -42,7 +43,7 @@ const TopicList = () => {
   const [selectedStatuses, setSelectedStatuses] = useState<TopicStatus[]>(['Not Started', 'In Progress', 'Completed']);
 
   const filteredAndSortedTopics = topics
-    .filter(topic => selectedStatuses.length === 0 || selectedStatuses.includes(topic.status))
+    .filter(topic => selectedStatuses.includes(topic.status))
     .sort((a, b) => {
       return (statusOrder[a.status as keyof typeof statusOrder] || 0) - 
              (statusOrder[b.status as keyof typeof statusOrder] || 0);

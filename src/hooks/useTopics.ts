@@ -105,24 +105,28 @@ export const useTopics = (initialTopics: Topic[] = []) => {
       console.log('Deleting topic with ID:', id);
       
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('You need to be logged in to delete data');
-        return;
-      }
       
+      // Remove the topic from local state first
       setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
       
-      const { error } = await supabase
-        .from('topics')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
-      
-      if (error) {
-        console.error('Error deleting topic:', error);
-        toast.error('Failed to delete topic from database');
+      // Only try database deletion if the user is logged in
+      if (user) {
+        const { error } = await supabase
+          .from('topics')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id);
+        
+        if (error) {
+          console.error('Error deleting topic from database:', error);
+          toast.error('Failed to delete topic from database');
+          // We don't restore the topic in state as the local deletion was successful
+        } else {
+          toast.success('Topic deleted successfully');
+        }
       } else {
-        toast.success('Topic deleted successfully');
+        // If not logged in, we've already removed it from state, just show success message
+        toast.success('Topic deleted from local storage');
       }
     } catch (error) {
       console.error('Error in deleteTopic:', error);
