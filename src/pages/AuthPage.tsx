@@ -11,6 +11,7 @@ const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -23,6 +24,11 @@ const AuthPage = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              name: name,
+            },
+          },
         });
         if (error) throw error;
         toast.success('Registration successful! Please check your email to verify your account.');
@@ -50,6 +56,19 @@ const AuthPage = () => {
           </h2>
         </div>
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {isSignUp && (
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                required={isSignUp}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
+          )}
           <div>
             <Label htmlFor="email">Email address</Label>
             <Input

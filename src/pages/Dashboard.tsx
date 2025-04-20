@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import TopicForm from "@/components/topics/TopicForm";
 import { Topic, TopicStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { WelcomeMessage } from '@/components/auth/WelcomeMessage';
 
 const Dashboard = () => {
   const { topics, methods, journals, resources, categories } = useLearning();
@@ -56,6 +57,7 @@ const Dashboard = () => {
 
   return (
     <MainLayout>
+      <WelcomeMessage />
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-hub-text mb-2">Learning Dashboard</h1>
         <p className="text-hub-text-muted">Track, reflect, and grow your knowledge</p>
