@@ -1,3 +1,4 @@
+
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
@@ -51,16 +52,8 @@ const Dashboard = () => {
     statusGroups[topic.status].push(topic);
   });
 
-  const goToTopics = () => {
-    navigate('/topics');
-  };
-
-  const goToJournal = () => {
-    navigate('/journal');
-  };
-
-  const goToResources = () => {
-    navigate('/resources');
+  const handleNavigation = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -79,7 +72,7 @@ const Dashboard = () => {
             <Button 
               variant="outline" 
               className="text-hub-primary border-hub-primary"
-              onClick={goToTopics}
+              onClick={() => handleNavigation('/topics')}
             >
               View All
             </Button>
@@ -116,7 +109,7 @@ const Dashboard = () => {
               <Button 
                 variant="link" 
                 className="text-hub-primary"
-                onClick={goToTopics}
+                onClick={() => handleNavigation('/topics')}
               >
                 View All
               </Button>
@@ -138,7 +131,7 @@ const Dashboard = () => {
                       <div 
                         key={topic.id} 
                         className="p-2 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
-                        onClick={() => navigate('/topics')}
+                        onClick={() => handleNavigation('/topics')}
                       >
                         <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
                         <div className="flex justify-between text-xs text-hub-text-muted">
@@ -151,7 +144,7 @@ const Dashboard = () => {
                       <Button 
                         variant="link" 
                         className="text-hub-primary text-sm hover:underline block text-center mt-2 w-full" 
-                        onClick={goToTopics}
+                        onClick={() => handleNavigation('/topics')}
                       >
                         + {statusTopics.length - 3} more
                       </Button>
@@ -214,7 +207,7 @@ const Dashboard = () => {
             <div 
               key={journal.id} 
               className="border-b border-hub-border last:border-0 py-3 hover:bg-gray-50 px-2 rounded-md cursor-pointer"
-              onClick={goToJournal}
+              onClick={() => handleNavigation('/journal')}
             >
               <div className="flex justify-between items-start mb-1">
                 <div className="flex items-center">
@@ -238,7 +231,7 @@ const Dashboard = () => {
               <Button 
                 variant="outline"
                 className="border-hub-primary text-hub-primary hover:bg-hub-muted"
-                onClick={goToJournal}
+                onClick={() => handleNavigation('/journal')}
               >
                 <PlusIcon className="mr-2 h-4 w-4" /> Add Journal Entry
               </Button>
@@ -249,7 +242,7 @@ const Dashboard = () => {
               <Button 
                 variant="link" 
                 className="text-hub-primary"
-                onClick={goToJournal}
+                onClick={() => handleNavigation('/journal')}
               >
                 View All Journal Entries
               </Button>
@@ -280,7 +273,7 @@ const Dashboard = () => {
                 className="flex flex-col h-28 p-4 items-center justify-center gap-2"
                 onClick={() => {
                   setIsActivityDialogOpen(false);
-                  goToJournal();
+                  handleNavigation('/journal');
                 }}
               >
                 <PlusIcon className="h-6 w-6" />
@@ -291,7 +284,7 @@ const Dashboard = () => {
                 className="flex flex-col h-28 p-4 items-center justify-center gap-2"
                 onClick={() => {
                   setIsActivityDialogOpen(false);
-                  goToResources();
+                  handleNavigation('/resources');
                 }}
               >
                 <PlusIcon className="h-6 w-6" />
@@ -302,7 +295,7 @@ const Dashboard = () => {
                 className="flex flex-col h-28 p-4 items-center justify-center gap-2"
                 onClick={() => {
                   setIsActivityDialogOpen(false);
-                  navigate('/topics');
+                  handleNavigation('/topics');
                 }}
               >
                 <PlusIcon className="h-6 w-6" />

@@ -1,8 +1,12 @@
 
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Dashboard from "./Dashboard";
+import TopicsPage from "./TopicsPage";
+import JournalPage from "./JournalPage";
+import ResourcesPage from "./ResourcesPage";
+import NotFound from "./NotFound";
 
 const Index = () => {
   const { session } = useAuth();
@@ -16,7 +20,15 @@ const Index = () => {
 
   if (!session) return null;
 
-  return <Dashboard />;
+  return (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/topics" element={<TopicsPage />} />
+      <Route path="/journal" element={<JournalPage />} />
+      <Route path="/resources" element={<ResourcesPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 };
 
 export default Index;
