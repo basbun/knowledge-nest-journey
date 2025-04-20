@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, BookText, FileText, List, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -9,6 +10,7 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
   const navigation = [
@@ -26,10 +28,11 @@ const Sidebar = () => {
     }
   };
 
-  const handleNavClick = () => {
+  const handleNavClick = (path: string) => {
     if (isMobile) {
       setMobileOpen(false);
     }
+    navigate(path);
   };
 
   return (
@@ -82,12 +85,11 @@ const Sidebar = () => {
             const isActive = location.pathname === item.href;
             
             return (
-              <Link
+              <button
                 key={item.name}
-                to={item.href}
-                onClick={handleNavClick}
+                onClick={() => handleNavClick(item.href)}
                 className={cn(
-                  'flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-hub-muted text-hub-primary'
                     : 'text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary',
@@ -96,7 +98,7 @@ const Sidebar = () => {
               >
                 <item.icon className={cn('h-5 w-5', collapsed && !isMobile ? 'mr-0' : 'mr-3')} />
                 {(!collapsed || isMobile) && <span>{item.name}</span>}
-              </Link>
+              </button>
             );
           })}
         </nav>

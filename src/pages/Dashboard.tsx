@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useLearning } from "@/context/LearningContext";
@@ -6,7 +5,7 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import TopicForm from "@/components/topics/TopicForm";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Topic, TopicStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +18,7 @@ const Dashboard = () => {
   // Helper function to get category name from ID
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
+    return category ? category.name : "Uncategorized";
   };
 
   const getStatusClass = (status: string) => {
@@ -136,15 +135,17 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     {statusTopics.slice(0, 3).map(topic => (
-                      <Link key={topic.id} to={`/topics`} className="block">
-                        <div className="p-2 hover:bg-gray-50 rounded-md transition-colors">
-                          <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
-                          <div className="flex justify-between text-xs text-hub-text-muted">
-                            <span>{getCategoryName(topic.category)}</span>
-                            <span>{topic.progress}%</span>
-                          </div>
+                      <div 
+                        key={topic.id} 
+                        className="p-2 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
+                        onClick={() => navigate('/topics')}
+                      >
+                        <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
+                        <div className="flex justify-between text-xs text-hub-text-muted">
+                          <span>{getCategoryName(topic.category)}</span>
+                          <span>{topic.progress}%</span>
                         </div>
-                      </Link>
+                      </div>
                     ))}
                     {statusTopics.length > 3 && (
                       <Button 
@@ -210,36 +211,37 @@ const Dashboard = () => {
           {[...journals].sort((a, b) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ).slice(0, 5).map(journal => (
-            <Link key={journal.id} to="/journal" className="block">
-              <div className="border-b border-hub-border last:border-0 py-3 hover:bg-gray-50 px-2 rounded-md">
-                <div className="flex justify-between items-start mb-1">
-                  <div className="flex items-center">
-                    <span className="bg-hub-muted text-xs px-2.5 py-1 rounded text-hub-text-muted mr-2">
-                      {journal.category}
-                    </span>
-                    <span className="text-xs text-hub-text-muted">
-                      {new Date(journal.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <span className="text-xs bg-hub-secondary px-2 py-0.5 rounded">
-                    {topics.find(t => t.id === journal.topicId)?.title}
+            <div 
+              key={journal.id} 
+              className="border-b border-hub-border last:border-0 py-3 hover:bg-gray-50 px-2 rounded-md cursor-pointer"
+              onClick={goToJournal}
+            >
+              <div className="flex justify-between items-start mb-1">
+                <div className="flex items-center">
+                  <span className="bg-hub-muted text-xs px-2.5 py-1 rounded text-hub-text-muted mr-2">
+                    {journal.category}
+                  </span>
+                  <span className="text-xs text-hub-text-muted">
+                    {new Date(journal.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-hub-text line-clamp-2">{journal.content}</p>
+                <span className="text-xs bg-hub-secondary px-2 py-0.5 rounded">
+                  {topics.find(t => t.id === journal.topicId)?.title}
+                </span>
               </div>
-            </Link>
+              <p className="text-hub-text line-clamp-2">{journal.content}</p>
+            </div>
           ))}
           {journals.length === 0 && (
             <div className="text-center py-8">
               <p className="text-hub-text-muted mb-4">No journal entries yet</p>
-              <Link to="/journal">
-                <Button 
-                  variant="outline"
-                  className="border-hub-primary text-hub-primary hover:bg-hub-muted"
-                >
-                  <PlusIcon className="mr-2 h-4 w-4" /> Add Journal Entry
-                </Button>
-              </Link>
+              <Button 
+                variant="outline"
+                className="border-hub-primary text-hub-primary hover:bg-hub-muted"
+                onClick={goToJournal}
+              >
+                <PlusIcon className="mr-2 h-4 w-4" /> Add Journal Entry
+              </Button>
             </div>
           )}
           {journals.length > 0 && (
