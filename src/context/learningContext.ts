@@ -2,7 +2,7 @@
 import { createContext, useContext } from 'react';
 import { Topic, LearningMethod, JournalEntry, Resource, Category } from '../types';
 
-interface LearningContextType {
+export interface LearningContextType {
   topics: Topic[];
   methods: LearningMethod[];
   journals: JournalEntry[];
