@@ -41,17 +41,20 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
     return Array.from(allTags);
   }, [journals]);
 
-  // Filter suggestions based on input
+  // Filter suggestions based on input - with additional safety checks
   const suggestedTags = useMemo(() => {
-    if (!tagInput) return existingTags;
+    if (!tagInput) return existingTags || [];
+    if (!existingTags || !Array.isArray(existingTags)) return [];
+    if (!tags || !Array.isArray(tags)) return existingTags;
+    
     return existingTags.filter(tag => 
-      tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+      tag && tag.toLowerCase().includes(tagInput.toLowerCase()) &&
       !tags.includes(tag)
     );
   }, [tagInput, existingTags, tags]);
 
   const handleAddTag = (newTag: string) => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
+    if (newTag && newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()]);
       setTagInput('');
       setIsTagPopoverOpen(false);
@@ -60,6 +63,13 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      e.preventDefault();
+      handleAddTag(tagInput);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,14 +83,14 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
     if (journal) {
       updateJournal(journal.id, {
         content,
-        tags,
+        tags: tags || [],
       });
       toast.success('Journal entry updated successfully');
     } else {
       addJournal({
         topicId,
         content,
-        tags,
+        tags: tags || [],
       });
       toast.success('Journal entry added successfully');
     }
@@ -104,46 +114,27 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="tags">Tags</Label>
-        <Popover open={isTagPopoverOpen} onOpenChange={setIsTagPopoverOpen}>
-          <PopoverTrigger asChild>
-            <div className="flex gap-2">
-              <Input
-                id="tags"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                placeholder="Add tags..."
-                className="flex-1"
-              />
-              <Button 
-                type="button" 
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Tag className="h-4 w-4" />
-                Add
-              </Button>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Search tags..." />
-              <CommandEmpty>No tags found.</CommandEmpty>
-              <CommandGroup>
-                {Array.isArray(suggestedTags) && suggestedTags.map((tag) => (
-                  <CommandItem
-                    key={tag}
-                    onSelect={() => handleAddTag(tag)}
-                    className="cursor-pointer"
-                  >
-                    {tag}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <div className="flex gap-2">
+          <Input
+            id="tags"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagInputKeyDown}
+            placeholder="Add tags..."
+            className="flex-1"
+          />
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={() => handleAddTag(tagInput)}
+            className="flex items-center gap-2"
+          >
+            <Tag className="h-4 w-4" />
+            Add
+          </Button>
+        </div>
         
-        {tags.length > 0 && (
+        {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {tags.map((tag, index) => (
               <Badge 
