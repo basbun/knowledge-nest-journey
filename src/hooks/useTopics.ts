@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Topic } from '@/types';
@@ -106,10 +105,8 @@ export const useTopics = (initialTopics: Topic[] = []) => {
       
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Remove the topic from local state first
       setTopics(prevTopics => prevTopics.filter(topic => topic.id !== id));
       
-      // Only try database deletion if the user is logged in
       if (user) {
         const { error } = await supabase
           .from('topics')
@@ -119,13 +116,11 @@ export const useTopics = (initialTopics: Topic[] = []) => {
         
         if (error) {
           console.error('Error deleting topic from database:', error);
-          toast.error('Failed to delete topic from database');
-          // We don't restore the topic in state as the local deletion was successful
+          toast.error(`Failed to delete topic from database: ${error.message || ''}`);
         } else {
           toast.success('Topic deleted successfully');
         }
       } else {
-        // If not logged in, we've already removed it from state, just show success message
         toast.success('Topic deleted from local storage');
       }
     } catch (error) {

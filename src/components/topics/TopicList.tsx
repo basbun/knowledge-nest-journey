@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic, TopicStatus } from '@/types';
@@ -44,6 +43,7 @@ const TopicList = () => {
 
   const filteredAndSortedTopics = topics
     .filter(topic => selectedStatuses.includes(topic.status))
+    .filter(topic => topic.title && topic.title.trim() !== '') // filter out topics missing title to avoid fallback display of ID
     .sort((a, b) => {
       return (statusOrder[a.status as keyof typeof statusOrder] || 0) - 
              (statusOrder[b.status as keyof typeof statusOrder] || 0);
@@ -186,7 +186,7 @@ const TopicList = () => {
           key={category.id}
           categoryId={category.id}
           categoryName={category.name}
-          topics={filteredAndSortedTopics}
+          topics={filteredAndSortedTopics.filter(t => t.category === category.name && category.isActive)} // only topics for this category and active category
           isActive={category.isActive}
           onTopicClick={handleTopicClick}
           onCategoryAction={handleCategoryAction}
