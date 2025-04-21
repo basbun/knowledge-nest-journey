@@ -29,8 +29,11 @@ const CategoryItem = ({
   onDragOver,
   onDrop,
 }: CategoryItemProps) => {
-  // Filter topics that belong to this category (comparing with categoryName, not categoryId)
-  const categoryTopics = topics.filter(topic => topic.category === categoryName);
+  // Filter topics that belong to this category
+  // Check both category name and category ID to ensure we catch all matches
+  const categoryTopics = topics.filter(topic => 
+    topic.category === categoryName || topic.category === categoryId
+  );
   
   return (
     <div

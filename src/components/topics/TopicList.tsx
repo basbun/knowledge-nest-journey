@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic, TopicStatus } from '@/types';
@@ -136,6 +137,7 @@ const TopicList = () => {
   console.log('Filtered topics count:', filteredAndSortedTopics.length);
   console.log('Categories:', categories);
   console.log('Selected statuses:', selectedStatuses);
+  console.log('Topics raw data:', topics.map(t => ({ id: t.id, title: t.title, category: t.category })));
 
   return (
     <div>
