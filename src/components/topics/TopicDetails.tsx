@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useLearning } from '@/context/LearningContext';
 import { Topic } from '@/types';
@@ -12,58 +11,49 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import StatusBadge from './StatusBadge';
 import TopicProgress from './TopicProgress';
 import TopicTabs from './TopicTabs';
-
 interface TopicDetailsProps {
   topic: Topic;
   onEdit: () => void;
 }
-
-const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
-  const { deleteTopic } = useLearning();
+const TopicDetails = ({
+  topic,
+  onEdit
+}: TopicDetailsProps) => {
+  const {
+    deleteTopic
+  } = useLearning();
   const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useIsMobile();
-
   const handleDelete = () => {
     deleteTopic(topic.id);
     toast.success('Topic deleted successfully');
     setIsDeleting(false);
   };
-
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not set';
     return new Date(dateString).toLocaleDateString();
   };
-
   const getRelativeTimeFromNow = (dateString: string) => {
-    return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    return formatDistanceToNow(new Date(dateString), {
+      addSuffix: true
+    });
   };
-
-  return (
-    <div className={`space-y-4 ${isMobile ? 'px-0' : 'px-4'}`}>
+  return <div className={`space-y-4 ${isMobile ? 'px-0' : 'px-4'}`}>
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
         <div>
           <div className="flex flex-col md:flex-row md:items-center gap-3">
             <h2 className="text-xl md:text-2xl font-bold text-hub-text">{topic.title}</h2>
             <StatusBadge status={topic.status} />
           </div>
-          <p className="text-hub-text-muted mt-1">{topic.category}</p>
+          
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={onEdit}
-            className="flex items-center"
-          >
+          <Button variant="outline" size="sm" onClick={onEdit} className="flex items-center">
             <Pencil className="h-4 w-4 mr-1" /> Edit
           </Button>
           <AlertDialog open={isDeleting} onOpenChange={setIsDeleting}>
             <AlertDialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center text-red-500 border-red-200 hover:bg-red-50"
-              >
+              <Button variant="outline" size="sm" className="flex items-center text-red-500 border-red-200 hover:bg-red-50">
                 <Trash2 className="h-4 w-4 mr-1" /> Delete
               </Button>
             </AlertDialogTrigger>
@@ -111,8 +101,6 @@ const TopicDetails = ({ topic, onEdit }: TopicDetailsProps) => {
       </div>
 
       <TopicTabs topicId={topic.id} />
-    </div>
-  );
+    </div>;
 };
-
 export default TopicDetails;
