@@ -133,6 +133,10 @@ const TopicList = () => {
     'Archived'
   ];
 
+  console.log('Filtered topics count:', filteredAndSortedTopics.length);
+  console.log('Categories:', categories);
+  console.log('Selected statuses:', selectedStatuses);
+
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -186,7 +190,7 @@ const TopicList = () => {
           key={category.id}
           categoryId={category.id}
           categoryName={category.name}
-          topics={filteredAndSortedTopics.filter(t => t.category === category.name && category.isActive)} // only topics for this category and active category
+          topics={filteredAndSortedTopics}
           isActive={category.isActive}
           onTopicClick={handleTopicClick}
           onCategoryAction={handleCategoryAction}

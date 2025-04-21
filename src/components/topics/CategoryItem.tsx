@@ -29,6 +29,9 @@ const CategoryItem = ({
   onDragOver,
   onDrop,
 }: CategoryItemProps) => {
+  // Filter topics that belong to this category (comparing with categoryName, not categoryId)
+  const categoryTopics = topics.filter(topic => topic.category === categoryName);
+  
   return (
     <div
       key={categoryId}
@@ -46,9 +49,8 @@ const CategoryItem = ({
       
       {isActive && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {topics
-            .filter((topic) => topic.category === categoryId)
-            .map((topic) => (
+          {categoryTopics.length > 0 ? (
+            categoryTopics.map((topic) => (
               <div
                 key={topic.id}
                 draggable
@@ -64,7 +66,12 @@ const CategoryItem = ({
                   className="h-full"
                 />
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="col-span-3 py-4 text-center text-hub-text-muted">
+              No topics in this category
+            </div>
+          )}
         </div>
       )}
     </div>
