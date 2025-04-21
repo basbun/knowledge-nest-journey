@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut } from 'lucide-react';
+import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
@@ -83,9 +83,9 @@ const Sidebar = () => {
               )}
             >
               {collapsed ? (
-                <Home className="h-5 w-5" />
+                <ChevronRight className="h-5 w-5" />
               ) : (
-                <Home className="h-5 w-5" />
+                <ChevronLeft className="h-5 w-5" />
               )}
             </button>
           )}
@@ -139,3 +139,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
