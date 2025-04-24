@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut, ChevronLeft, ChevronRight, Target, User, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
@@ -18,8 +17,8 @@ const Sidebar = () => {
   const { session, isDemoMode, setIsDemoMode } = useAuth();
   
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: BookOpen },
-    { name: 'Topics', href: '/topics', icon: List },
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Topics', href: '/topics', icon: Target },
     { name: 'Journal', href: '/journal', icon: FileText },
     { name: 'Resources', href: '/resources', icon: Globe },
   ];
@@ -67,25 +66,47 @@ const Sidebar = () => {
     }
   };
 
+  if (isMobile) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe">
+        <nav className="flex items-center justify-around px-4 py-2">
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.href;
+            
+            return (
+              <button
+                key={item.name}
+                onClick={() => handleNavClick(item.href)}
+                className={cn(
+                  'flex flex-col items-center justify-center p-2 rounded-lg transition-colors',
+                  isActive
+                    ? 'text-hub-primary'
+                    : 'text-gray-500 hover:text-hub-primary'
+                )}
+              >
+                <item.icon className="h-6 w-6" />
+                <span className="text-xs mt-1">{item.name}</span>
+              </button>
+            );
+          })}
+          <button
+            onClick={() => handleLogout()}
+            className="flex flex-col items-center justify-center p-2 rounded-lg text-gray-500 hover:text-hub-primary"
+          >
+            <User className="h-6 w-6" />
+            <span className="text-xs mt-1">Profile</span>
+          </button>
+        </nav>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isMobile && (
-        <Button
-          variant="ghost"
-          className="fixed top-4 left-4 z-50 p-2"
-          onClick={toggleSidebar}
-        >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
-      )}
-
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-40 flex flex-col border-r border-hub-border bg-white transition-all duration-300',
-          isMobile 
-            ? (mobileOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64') 
-            : (collapsed ? 'w-16' : 'w-64'),
-          isMobile && 'shadow-lg'
+          collapsed ? 'w-16' : 'w-64'
         )}
       >
         <div className="flex h-16 items-center justify-between border-b border-hub-border px-4">
@@ -145,13 +166,6 @@ const Sidebar = () => {
           </button>
         </div>
       </div>
-
-      {isMobile && mobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-30"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
     </>
   );
 };

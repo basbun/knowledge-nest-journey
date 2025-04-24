@@ -16,8 +16,8 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       <main className={cn(
-        'flex-1 p-4 md:p-8 transition-all',
-        !isMobile && 'md:ml-16 xl:ml-16',
+        'flex-1 transition-all',
+        isMobile ? 'pb-24 p-4' : 'p-4 md:p-8 md:ml-16 xl:ml-16',
         className
       )}>
         {children}
