@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Topic, LearningMethod, JournalEntry, Resource, Category, TopicStatus } from '@/types';
+import { useAuth } from '@/context/AuthContext';
 
 export const useDataSync = (
   setTopics: (topics: Topic[]) => void,
@@ -16,50 +18,67 @@ export const useDataSync = (
   initialResources: Resource[],
   initialCategories: Category[]
 ) => {
+  const { session, isDemoMode } = useAuth();
+  const [dataFetched, setDataFetched] = useState(false);
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('No authenticated user found, using local data');
+      // If in demo mode, use initial demo data
+      if (isDemoMode) {
+        console.log('Demo mode active, using local data');
+        setTopics(initialTopics);
+        setMethods(initialMethods);
+        setJournals(initialJournals);
+        setResources(initialResources);
+        setCategories(initialCategories);
+        setIsLoading(false);
+        setDataFetched(true);
+        return;
+      }
+      
+      // If not in demo mode but no session, don't fetch data yet
+      if (!session) {
+        console.log('No authenticated user found, waiting for authentication');
         setIsLoading(false);
         return;
       }
       
+      console.log('Fetching data for authenticated user:', session.user.id);
       const { data: topicsData, error: topicsError } = await supabase
         .from('topics')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', session.user.id);
 
       if (topicsError) throw topicsError;
 
       const { data: methodsData, error: methodsError } = await supabase
         .from('learning_methods')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', session.user.id);
 
       if (methodsError) throw methodsError;
 
       const { data: journalsData, error: journalsError } = await supabase
         .from('journal_entries')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', session.user.id);
 
       if (journalsError) throw journalsError;
 
       const { data: resourcesData, error: resourcesError } = await supabase
         .from('resources')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', session.user.id);
 
       if (resourcesError) throw resourcesError;
 
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .order('order');
 
       if (categoriesError) throw categoriesError;
@@ -123,16 +142,31 @@ export const useDataSync = (
       setJournals(transformedJournals.length > 0 ? transformedJournals : initialJournals);
       setResources(transformedResources.length > 0 ? transformedResources : initialResources);
       setCategories(transformedCategories.length > 0 ? transformedCategories : initialCategories);
+      setDataFetched(true);
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to load data. Using local data instead.');
+      // Fall back to demo data on error
+      setTopics(initialTopics);
+      setMethods(initialMethods);
+      setJournals(initialJournals);
+      setResources(initialResources);
+      setCategories(initialCategories);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Run fetchData whenever auth state changes
   useEffect(() => {
-    fetchData();
+    if (session || isDemoMode) {
+      fetchData();
+    }
+  }, [session, isDemoMode]);
+
+  useEffect(() => {
+    // Only set up realtime listeners when authenticated
+    if (!session || isDemoMode) return;
 
     const topicsChannel = supabase
       .channel('public:topics')
@@ -176,7 +210,7 @@ export const useDataSync = (
       supabase.removeChannel(resourcesChannel);
       supabase.removeChannel(categoriesChannel);
     };
-  }, []);
+  }, [session, isDemoMode]);
 
-  return { fetchData };
+  return { fetchData, dataFetched };
 };

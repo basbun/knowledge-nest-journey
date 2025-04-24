@@ -1,5 +1,5 @@
 
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import { LearningContext } from './learningContext';
 import { Topic, LearningMethod, JournalEntry, Resource, Category } from '@/types';
 import { initialCategories, initialTopics, initialMethods, initialJournals, initialResources } from './learningInitialState';
@@ -9,10 +9,12 @@ import { useJournals } from '@/hooks/useJournals';
 import { useResources } from '@/hooks/useResources';
 import { useCategories } from '@/hooks/useCategories';
 import { useDataSync } from '@/hooks/useDataSync';
+import { useAuth } from '@/context/AuthContext';
 
 export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { session, isDemoMode } = useAuth();
 
   const {
     topics,
@@ -56,7 +58,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     toggleCategoryActive
   } = useCategories(initialCategories);
 
-  useDataSync(
+  const { dataFetched } = useDataSync(
     setTopics,
     setMethods,
     setJournals,
@@ -70,6 +72,21 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     initialResources,
     initialCategories
   );
+
+  // Show loading state until data is fetched
+  useEffect(() => {
+    if (isDemoMode || (session && dataFetched)) {
+      setIsLoading(false);
+    } else if (!session && !isDemoMode) {
+      // Use initialData when not logged in and not in demo mode
+      setTopics(initialTopics);
+      setMethods(initialMethods);
+      setJournals(initialJournals);
+      setResources(initialResources);
+      setCategories(initialCategories);
+      setIsLoading(false);
+    }
+  }, [session, isDemoMode, dataFetched]);
 
   return (
     <LearningContext.Provider
