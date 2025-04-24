@@ -1,9 +1,9 @@
+
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, BookText, FileText, List, Menu, X, Globe, Home, LogOut, ChevronLeft, ChevronRight, Target, User, Plus } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Home, Target, FileText, Globe, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Button } from '../ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -60,7 +60,6 @@ const Sidebar = () => {
       console.error('Logout error:', error);
       
       // Even if there's an error, we should still navigate to the auth page
-      // This ensures users can always exit their current session
       navigate('/auth');
       toast.success('Redirected to login');
     }
@@ -90,11 +89,11 @@ const Sidebar = () => {
             );
           })}
           <button
-            onClick={() => handleLogout()}
+            onClick={handleLogout}
             className="flex flex-col items-center justify-center p-2 rounded-lg text-gray-500 hover:text-hub-primary"
           >
-            <User className="h-6 w-6" />
-            <span className="text-xs mt-1">Profile</span>
+            <LogOut className="h-6 w-6" />
+            <span className="text-xs mt-1">Logout</span>
           </button>
         </nav>
       </div>
@@ -171,3 +170,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
