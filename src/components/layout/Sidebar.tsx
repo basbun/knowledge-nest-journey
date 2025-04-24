@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
@@ -14,6 +15,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { session, isDemoMode, setIsDemoMode } = useAuth();
   
   const navigation = [
     { name: 'Dashboard', href: '/', icon: BookOpen },
@@ -39,13 +41,29 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (isDemoMode) {
+        // If in demo mode, simply disable demo mode and navigate to auth
+        setIsDemoMode(false);
+        navigate('/auth');
+        toast.success('Exited demo mode');
+        return;
+      }
+
+      // Only attempt to sign out if there's an active session
+      if (session) {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      }
+      
       navigate('/auth');
       toast.success('Logged out successfully');
     } catch (error) {
-      toast.error('Error logging out');
       console.error('Logout error:', error);
+      
+      // Even if there's an error, we should still navigate to the auth page
+      // This ensures users can always exit their current session
+      navigate('/auth');
+      toast.success('Redirected to login');
     }
   };
 
@@ -139,4 +157,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
