@@ -6,13 +6,21 @@ import { supabase } from '@/integrations/supabase/client';
 type AuthContextType = {
   session: Session | null;
   user: User | null;
+  isDemoMode: boolean;
+  setIsDemoMode: (value: boolean) => void;
 };
 
-const AuthContext = createContext<AuthContextType>({ session: null, user: null });
+const AuthContext = createContext<AuthContextType>({ 
+  session: null, 
+  user: null, 
+  isDemoMode: false,
+  setIsDemoMode: () => {} 
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -20,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        if (session) setIsDemoMode(false);
       }
     );
 
@@ -33,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, user }}>
+    <AuthContext.Provider value={{ session, user, isDemoMode, setIsDemoMode }}>
       {children}
     </AuthContext.Provider>
   );

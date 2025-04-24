@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -14,6 +15,7 @@ const AuthPage = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { setIsDemoMode } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +47,12 @@ const AuthPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemoMode = () => {
+    setIsDemoMode(true);
+    toast.success('Welcome to demo mode! You can explore the app without signing up.');
+    navigate('/');
   };
 
   return (
@@ -99,16 +107,26 @@ const AuthPage = () => {
             {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>
         </form>
-        <div className="text-center">
-          <button
+        <div className="space-y-4">
+          <Button
             type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-hub-primary hover:underline"
+            variant="outline"
+            className="w-full"
+            onClick={handleDemoMode}
           >
-            {isSignUp
-              ? 'Already have an account? Sign in'
-              : "Don't have an account? Sign up"}
-          </button>
+            Try Demo Mode
+          </Button>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-hub-primary hover:underline"
+            >
+              {isSignUp
+                ? 'Already have an account? Sign in'
+                : "Don't have an account? Sign up"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

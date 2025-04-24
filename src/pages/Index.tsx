@@ -9,16 +9,16 @@ import ResourcesPage from "./ResourcesPage";
 import NotFound from "./NotFound";
 
 const Index = () => {
-  const { session } = useAuth();
+  const { session, isDemoMode } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session) {
+    if (!session && !isDemoMode) {
       navigate('/auth');
     }
-  }, [session, navigate]);
+  }, [session, isDemoMode, navigate]);
 
-  if (!session) return null;
+  if (!session && !isDemoMode) return null;
 
   return (
     <Routes>
