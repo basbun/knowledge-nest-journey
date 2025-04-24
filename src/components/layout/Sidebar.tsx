@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Target, FileText, Globe, LogOut } from 'lucide-react';
+import { Home, Target, FileText, Globe, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,14 +40,12 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       if (isDemoMode) {
-        // If in demo mode, simply disable demo mode and navigate to auth
         setIsDemoMode(false);
         navigate('/auth');
         toast.success('Exited demo mode');
         return;
       }
 
-      // Only attempt to sign out if there's an active session
       if (session) {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
@@ -59,7 +56,6 @@ const Sidebar = () => {
     } catch (error) {
       console.error('Logout error:', error);
       
-      // Even if there's an error, we should still navigate to the auth page
       navigate('/auth');
       toast.success('Redirected to login');
     }
@@ -151,7 +147,6 @@ const Sidebar = () => {
           })}
         </nav>
         
-        {/* Logout Button at the bottom */}
         <div className="border-t border-hub-border p-2">
           <button
             onClick={handleLogout}
@@ -170,4 +165,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
