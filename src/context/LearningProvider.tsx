@@ -14,7 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { session, isDemoMode } = useAuth();
+  const { session, isDemoMode, isLoading: authLoading } = useAuth();
 
   const {
     topics,
@@ -58,7 +58,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     toggleCategoryActive
   } = useCategories(initialCategories);
 
-  const { dataFetched } = useDataSync(
+  const { dataFetched, fetchData } = useDataSync(
     setTopics,
     setMethods,
     setJournals,
@@ -73,12 +73,29 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     initialCategories
   );
 
-  // Show loading state until data is fetched
+  // Wait for auth to resolve before deciding what data to show
   useEffect(() => {
-    if (isDemoMode || (session && dataFetched)) {
+    if (authLoading) {
+      // Still waiting for auth
+      return;
+    }
+    
+    if (isDemoMode) {
+      // Demo mode: use initial data
+      console.log('Demo mode active, using demo data');
+      setTopics(initialTopics);
+      setMethods(initialMethods);
+      setJournals(initialJournals);
+      setResources(initialResources);
+      setCategories(initialCategories);
       setIsLoading(false);
-    } else if (!session && !isDemoMode) {
-      // Use initialData when not logged in and not in demo mode
+    } else if (session) {
+      // Authenticated: refetch data to ensure latest
+      console.log('Authenticated user, fetching data');
+      fetchData();
+    } else {
+      // Not logged in and not in demo mode: use initial data
+      console.log('Not authenticated and not in demo mode, using initial data');
       setTopics(initialTopics);
       setMethods(initialMethods);
       setJournals(initialJournals);
@@ -86,7 +103,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       setCategories(initialCategories);
       setIsLoading(false);
     }
-  }, [session, isDemoMode, dataFetched]);
+  }, [session, isDemoMode, authLoading]);
 
   return (
     <LearningContext.Provider

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Topic, LearningMethod, JournalEntry, Resource, Category, TopicStatus } from '@/types';
 import { useAuth } from '@/context/AuthContext';
@@ -21,7 +21,8 @@ export const useDataSync = (
   const { session, isDemoMode } = useAuth();
   const [dataFetched, setDataFetched] = useState(false);
 
-  const fetchData = async () => {
+  // Make fetchData a useCallback so we can call it from the parent
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -143,6 +144,7 @@ export const useDataSync = (
       setResources(transformedResources.length > 0 ? transformedResources : initialResources);
       setCategories(transformedCategories.length > 0 ? transformedCategories : initialCategories);
       setDataFetched(true);
+      console.log('Data successfully fetched for user');
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to load data. Using local data instead.');
@@ -155,14 +157,14 @@ export const useDataSync = (
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session, isDemoMode]);
 
   // Run fetchData whenever auth state changes
   useEffect(() => {
-    if (session || isDemoMode) {
+    if (session) {
       fetchData();
     }
-  }, [session, isDemoMode]);
+  }, [session, fetchData]);
 
   useEffect(() => {
     // Only set up realtime listeners when authenticated
@@ -210,7 +212,7 @@ export const useDataSync = (
       supabase.removeChannel(resourcesChannel);
       supabase.removeChannel(categoriesChannel);
     };
-  }, [session, isDemoMode]);
+  }, [session, isDemoMode, fetchData]);
 
   return { fetchData, dataFetched };
 };

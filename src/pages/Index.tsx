@@ -9,15 +9,20 @@ import ResourcesPage from "./ResourcesPage";
 import NotFound from "./NotFound";
 
 const Index = () => {
-  const { session, isDemoMode } = useAuth();
+  const { session, isDemoMode, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session && !isDemoMode) {
+    // Only redirect after auth has been checked
+    if (!isLoading && !session && !isDemoMode) {
       navigate('/auth');
     }
-  }, [session, isDemoMode, navigate]);
+  }, [session, isDemoMode, navigate, isLoading]);
 
+  // Show nothing while checking auth
+  if (isLoading) return null;
+  
+  // Don't render routes until auth state is determined
   if (!session && !isDemoMode) return null;
 
   return (
