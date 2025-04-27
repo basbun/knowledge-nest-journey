@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 type AuthContextType = {
   session: Session | null;
@@ -39,6 +40,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (session) {
           console.log('User logged in, disabling demo mode');
           setIsDemoMode(false);
+          if (event === 'SIGNED_IN') {
+            toast.success('Successfully signed in');
+          }
         }
         
         // Auth state is resolved

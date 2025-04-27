@@ -26,6 +26,7 @@ export interface LearningContextType {
   reorderCategory: (id: string, direction: 'up' | 'down') => void;
   toggleCategoryActive: (id: string) => void;
   isLoading: boolean;
+  dataFetched: boolean; // Added to track if data has been fetched
   error: string | null;
 }
 

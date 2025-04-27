@@ -10,9 +10,11 @@ import { useResources } from '@/hooks/useResources';
 import { useCategories } from '@/hooks/useCategories';
 import { useDataSync } from '@/hooks/useDataSync';
 import { useAuth } from '@/context/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [dataFetched, setDataFetched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { session, isDemoMode, isLoading: authLoading } = useAuth();
 
@@ -58,7 +60,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     toggleCategoryActive
   } = useCategories(initialCategories);
 
-  const { dataFetched, fetchData } = useDataSync(
+  const { dataFetched: syncDataFetched, fetchData } = useDataSync(
     setTopics,
     setMethods,
     setJournals,
@@ -73,10 +75,16 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
     initialCategories
   );
 
+  // Set dataFetched based on the value from useDataSync
+  useEffect(() => {
+    setDataFetched(syncDataFetched);
+  }, [syncDataFetched]);
+
   // Wait for auth to resolve before deciding what data to show
   useEffect(() => {
     if (authLoading) {
       // Still waiting for auth
+      setIsLoading(true);
       return;
     }
     
@@ -89,9 +97,11 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       setResources(initialResources);
       setCategories(initialCategories);
       setIsLoading(false);
+      setDataFetched(true);
     } else if (session) {
       // Authenticated: refetch data to ensure latest
       console.log('Authenticated user, fetching data');
+      setIsLoading(true); // Ensure loading state is active until data is fetched
       fetchData();
     } else {
       // Not logged in and not in demo mode: use initial data
@@ -102,6 +112,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
       setResources(initialResources);
       setCategories(initialCategories);
       setIsLoading(false);
+      setDataFetched(true);
     }
   }, [session, isDemoMode, authLoading]);
 
@@ -131,6 +142,7 @@ export const LearningProvider: React.FC<{ children: ReactNode }> = ({ children }
         reorderCategory,
         toggleCategoryActive,
         isLoading,
+        dataFetched,
         error,
       }}
     >
