@@ -95,7 +95,8 @@
 
 /* Learning Hub Custom Styles */
 .learning-card {
-  @apply bg-white rounded-xl shadow-sm border border-hub-border p-4 transition-all hover:shadow-md;
+  /* bg-hub-card and border-hub-border will automatically use dark variants if defined in tailwind.config.ts */
+  @apply bg-hub-card rounded-xl shadow-sm border border-hub-border p-4 transition-all hover:shadow-md;
 }
 
 /* Mobile Optimizations */
@@ -110,10 +111,12 @@
 }
 
 .progress-bar {
+  /* bg-hub-secondary will automatically use dark variant */
   @apply h-2 bg-hub-secondary rounded-full overflow-hidden;
 }
 
 .progress-value {
+  /* bg-hub-primary will automatically use dark variant */
   @apply h-full bg-hub-primary rounded-full;
 }
 
@@ -122,21 +125,21 @@
 }
 
 .status-to-start {
-  @apply bg-gray-100 text-gray-800;
+  @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
 }
 
 .status-in-progress {
-  @apply bg-blue-100 text-blue-800;
+  @apply bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100;
 }
 
 .status-learning {
-  @apply bg-indigo-100 text-indigo-800;
+  @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-100;
 }
 
 .status-review {
-  @apply bg-amber-100 text-amber-800;
+  @apply bg-amber-100 text-amber-800 dark:bg-amber-600 dark:text-amber-100;
 }
 
 .status-completed {
-  @apply bg-green-100 text-green-800;
+  @apply bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100;
 }

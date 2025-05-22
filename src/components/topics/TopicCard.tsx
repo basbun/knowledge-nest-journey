@@ -24,8 +24,8 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
   return (
     <div 
       className={cn(
-        "learning-card cursor-pointer hover:transform hover:scale-[1.02] transition-all flex flex-col",
-        "h-full border border-gray-200 rounded-lg p-4 bg-white shadow-sm",
+        "learning-card cursor-pointer hover:transform hover:scale-[1.02] transition-all flex flex-col h-full", // Moved h-full here
+        // Removed: "h-full border border-gray-200 rounded-lg p-4 bg-white shadow-sm",
         className
       )}
       onClick={() => onClick(topic)}
