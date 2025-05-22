@@ -71,7 +71,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 w-full">
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-hub-border p-6"> {/* bg-white to bg-card */}
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Topics</h3>
           <div className="flex items-end justify-between">
             <span className="text-3xl font-bold text-hub-primary">{totalTopics}</span>
@@ -85,20 +85,20 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-hub-border p-6"> {/* bg-white to bg-card */}
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">In Progress</h3>
           <div className="flex items-end justify-between">
-            <span className="text-3xl font-bold text-blue-500">{inProgressTopics}</span>
+            <span className="text-3xl font-bold text-blue-500 dark:text-blue-400">{inProgressTopics}</span> {/* Added dark variant */}
             <span className="text-sm text-hub-text-muted">
               {totalTopics > 0 ? Math.round((inProgressTopics / totalTopics) * 100) : 0}% of topics
             </span>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-hub-border p-6"> {/* bg-white to bg-card */}
           <h3 className="text-lg font-medium text-hub-text-muted mb-2">Completed</h3>
           <div className="flex items-end justify-between">
-            <span className="text-3xl font-bold text-green-500">{completedTopics}</span>
+            <span className="text-3xl font-bold text-green-500 dark:text-green-400">{completedTopics}</span> {/* Added dark variant */}
             <span className="text-sm text-hub-text-muted">
               {totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0}% of topics
             </span>
@@ -122,7 +122,7 @@ const Dashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
               {Object.entries(statusGroups).map(([status, statusTopics]) => (
-                <div key={status} className="bg-white rounded-lg shadow-sm border border-hub-border p-4 h-full">
+                <div key={status} className="bg-card rounded-lg shadow-sm border border-hub-border p-4 h-full"> {/* bg-white to bg-card */}
                   <div className="flex items-center mb-3">
                     <span className={cn('status-badge mr-2', getStatusClass(status))}>
                       {status}
@@ -135,7 +135,7 @@ const Dashboard = () => {
                     {statusTopics.slice(0, 3).map(topic => (
                       <div 
                         key={topic.id} 
-                        className="p-2 hover:bg-gray-50 rounded-md transition-colors cursor-pointer"
+                        className="p-2 hover:bg-muted/50 rounded-md transition-colors cursor-pointer" // hover:bg-gray-50 to hover:bg-muted/50
                         onClick={() => handleNavigation('/topics')}
                       >
                         <h4 className="font-medium text-hub-text line-clamp-1">{topic.title}</h4>
@@ -163,7 +163,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4 w-full">
+          <div className="bg-card rounded-lg shadow-sm border border-hub-border p-4 w-full"> {/* bg-white to bg-card */}
             <h3 className="text-lg font-medium text-hub-text-muted mb-4">Activities Overview</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
@@ -204,13 +204,13 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold text-hub-text">Recent Activity</h2>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-hub-border p-4 w-full">
+        <div className="bg-card rounded-lg shadow-sm border border-hub-border p-4 w-full"> {/* bg-white to bg-card */}
           {[...journals].sort((a, b) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ).slice(0, 5).map(journal => (
             <div 
               key={journal.id} 
-              className="border-b border-hub-border last:border-0 py-3 hover:bg-gray-50 px-2 rounded-md cursor-pointer"
+              className="border-b border-hub-border last:border-0 py-3 hover:bg-muted/50 px-2 rounded-md cursor-pointer" // hover:bg-gray-50 to hover:bg-muted/50
               onClick={() => handleNavigation('/journal')}
             >
               <div className="flex justify-between items-start mb-1">
@@ -224,7 +224,7 @@ const Dashboard = () => {
                     {new Date(journal.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <span className="text-xs bg-hub-secondary px-2 py-0.5 rounded">
+                <span className="text-xs bg-hub-secondary text-foreground/90 px-2 py-0.5 rounded"> {/* Added text-foreground/90 */}
                   {topics.find(t => t.id === journal.topicId)?.title}
                 </span>
               </div>

@@ -53,7 +53,7 @@ const TopicDetails = ({
           </Button>
           <AlertDialog open={isDeleting} onOpenChange={setIsDeleting}>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex items-center text-red-500 border-red-200 hover:bg-red-50">
+              <Button variant="outline" size="sm" className="flex items-center text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive">
                 <Trash2 className="h-4 w-4 mr-1" /> Delete
               </Button>
             </AlertDialogTrigger>
@@ -76,7 +76,7 @@ const TopicDetails = ({
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-4 mb-6 border border-hub-border">
+      <div className="bg-card rounded-lg p-4 mb-6 border border-hub-border"> {/* Changed bg-white to bg-card */}
         <div className="mb-4">
           <h3 className="text-sm font-medium text-hub-text-muted mb-1">Description</h3>
           <p className="text-hub-text">{topic.description || 'No description provided.'}</p>
