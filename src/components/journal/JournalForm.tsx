@@ -146,7 +146,7 @@ const JournalForm = ({ topicId, journal, onClose }: JournalFormProps) => {
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  className="text-xs rounded-full hover:bg-muted/50 h-4 w-4 inline-flex items-center justify-center"
+                  className="text-xs rounded-full hover:bg-gray-200 h-4 w-4 inline-flex items-center justify-center"
                 >
                   ✕
                 </button>

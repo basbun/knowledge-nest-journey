@@ -74,7 +74,7 @@ const JournalList = ({ topicId }: JournalListProps) => {
           {topicJournals.map((journal) => (
             <div 
               key={journal.id} 
-              className="bg-card rounded-lg p-4 border border-hub-border" // Changed bg-white to bg-card
+              className="bg-white rounded-lg p-4 border border-hub-border"
             >
               <div className="flex justify-between mb-2">
                 <div className="flex items-center">
@@ -99,7 +99,7 @@ const JournalList = ({ topicId }: JournalListProps) => {
                         variant="ghost" 
                         size="sm"
                         onClick={() => setJournalToDelete(journal.id)}
-                        className="text-destructive hover:text-destructive/90" // Changed red colors to destructive
+                        className="text-red-400 hover:text-red-500"
                       >
                         Delete
                       </Button>
@@ -115,7 +115,7 @@ const JournalList = ({ topicId }: JournalListProps) => {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction 
                           onClick={() => handleDeleteJournal(journal.id)}
-                          variant="destructive" // Changed to destructive variant
+                          className="bg-red-500 hover:bg-red-600"
                         >
                           Delete
                         </AlertDialogAction>

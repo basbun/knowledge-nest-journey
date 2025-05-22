@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Target, FileText, Globe, LogOut, ChevronLeft, ChevronRight, Moon, Sun } from 'lucide-react'; // Added Moon and Sun for ThemeToggle if used directly
+import { Home, Target, FileText, Globe, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ThemeToggle from './ThemeToggle'; // Import ThemeToggle
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -147,17 +146,12 @@ const Sidebar = () => {
             );
           })}
         </nav>
-        {/* Theme Toggle and Logout Section */}
-        <div className="border-t border-hub-border p-2 mt-auto"> 
-          {!isMobile && (
-            <div className={cn("flex flex-col items-center space-y-2", collapsed && "items-center")}>
-              <ThemeToggle />
-            </div>
-          )}
+        
+        <div className="border-t border-hub-border p-2">
           <button
             onClick={handleLogout}
             className={cn(
-              'flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary mt-2', // Added mt-2 for spacing
+              'flex w-full items-center rounded-md px-3 py-2 text-sm font-medium transition-colors text-hub-text-muted hover:bg-hub-secondary hover:text-hub-primary',
               collapsed && !isMobile && 'justify-center px-2'
             )}
           >
