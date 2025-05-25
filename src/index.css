@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -139,4 +140,30 @@
 
 .status-completed {
   @apply bg-green-100 text-green-800;
+}
+
+/* Drag and Drop Styles */
+[draggable="true"] {
+  @apply cursor-grab;
+}
+
+[draggable="true"]:active {
+  @apply cursor-grabbing;
+}
+
+/* Improved drag visual feedback */
+.group:hover .learning-card {
+  @apply transform-gpu;
+}
+
+/* Clean drag boundaries */
+[draggable="true"] * {
+  pointer-events: none;
+}
+
+/* Restore pointer events for interactive elements */
+[draggable="true"] button,
+[draggable="true"] a,
+[draggable="true"] input {
+  pointer-events: auto;
 }

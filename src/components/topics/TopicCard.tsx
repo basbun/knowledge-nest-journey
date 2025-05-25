@@ -26,6 +26,7 @@ const TopicCard = ({ topic, onClick, className }: TopicCardProps) => {
       className={cn(
         "learning-card cursor-pointer hover:transform hover:scale-[1.02] transition-all flex flex-col",
         "h-full border border-gray-200 rounded-lg p-4 bg-white shadow-sm",
+        "select-none", // Prevent text selection during drag
         className
       )}
       onClick={() => onClick(topic)}
