@@ -37,12 +37,14 @@ const CategoryItem = ({
     e.dataTransfer.setData('text/plain', topic.id);
     e.dataTransfer.effectAllowed = 'move';
     
-    // Create a clean drag image
+    // Prefer inner card element for clean drag image
     const dragElement = e.currentTarget as HTMLElement;
-    const rect = dragElement.getBoundingClientRect();
+    const cardEl = dragElement.querySelector('.learning-card') as HTMLElement | null;
+    const targetEl = cardEl ?? dragElement;
+    const rect = targetEl.getBoundingClientRect();
     
     // Set the drag image to just the card being dragged
-    e.dataTransfer.setDragImage(dragElement, rect.width / 2, rect.height / 2);
+    e.dataTransfer.setDragImage(targetEl, rect.width / 2, rect.height / 2);
     
     onDragStart(topic);
   };
