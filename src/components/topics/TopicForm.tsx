@@ -15,11 +15,11 @@ interface TopicFormProps {
 }
 
 const TopicForm = ({ topic, onClose }: TopicFormProps) => {
-  const { addTopic, updateTopic, categories } = useLearning();
+  const { addTopic, updateTopic, categories, addCategory } = useLearning();
   
   const [title, setTitle] = useState(topic?.title || '');
   const [description, setDescription] = useState(topic?.description || '');
-  const [category, setCategory] = useState(topic?.category || '');
+  const [category, setCategory] = useState<string>('');
   const [status, setStatus] = useState<TopicStatus>(topic?.status || 'Not Started');
   const [progress, setProgress] = useState(topic?.progress || 0);
   const [startDate, setStartDate] = useState(topic?.startDate || '');
@@ -35,7 +35,14 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
     'Archived'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (topic) {
+      const initialId = topic.categoryId || categories.find((c) => c.name === topic.category)?.id || '';
+      setCategory(initialId);
+    }
+  }, [topic, categories]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title.trim()) {
@@ -43,18 +50,26 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
       return;
     }
     
-    const finalCategory = showNewCategory ? newCategory : category;
-    
-    if (!finalCategory) {
+    let selectedCategoryId = category;
+    if (showNewCategory) {
+      await addCategory(newCategory);
+      const created = categories.find((c) => c.name === newCategory);
+      selectedCategoryId = created?.id || '';
+    }
+
+    if (!selectedCategoryId) {
       toast.error('Please select or create a category');
       return;
     }
+
+    const categoryName = categories.find((c) => c.id === selectedCategoryId)?.name || newCategory;
     
     if (topic) {
       updateTopic(topic.id, {
         title,
         description,
-        category: finalCategory,
+        category: categoryName,
+        categoryId: selectedCategoryId,
         status,
         progress,
         startDate: startDate || undefined,
@@ -65,7 +80,8 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
       addTopic({
         title,
         description,
-        category: finalCategory,
+        category: categoryName,
+        categoryId: selectedCategoryId,
         status,
         progress,
         startDate: startDate || undefined,

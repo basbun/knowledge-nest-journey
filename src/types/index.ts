@@ -5,6 +5,7 @@ export interface Topic {
   title: string;
   description: string;
   category: string;
+  categoryId?: string;
   status: TopicStatus;
   progress: number;
   startDate?: string;

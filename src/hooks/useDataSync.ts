@@ -113,19 +113,23 @@ export const useDataSync = (
         throw resourcesError;
       }
 
-      const transformedTopics: Topic[] = topicsData?.map(item => ({
-        id: item.id,
-        title: item.title,
-        description: item.description || '',
-        category: item.category,
-        status: item.status as TopicStatus,
-        progress: item.progress,
-        startDate: item.start_date,
-        targetEndDate: item.target_end_date,
-        parentId: item.parent_id,
-        createdAt: item.created_at,
-        updatedAt: item.updated_at
-      })) || [];
+      const transformedTopics: Topic[] = topicsData?.map(item => {
+        const matchedCategoryId = (item as any).category_id || categoriesData?.find(c => c.name === item.category)?.id || undefined;
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description || '',
+          category: item.category,
+          categoryId: matchedCategoryId,
+          status: item.status as TopicStatus,
+          progress: item.progress,
+          startDate: item.start_date,
+          targetEndDate: item.target_end_date,
+          parentId: item.parent_id,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at
+        };
+      }) || [];
 
       const transformedMethods: LearningMethod[] = methodsData?.map(item => ({
         id: item.id,
@@ -210,35 +214,35 @@ export const useDataSync = (
     
     const topicsChannel = supabase
       .channel('public:topics')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'topics' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'topics', filter: `user_id=eq.${session.user.id}` }, () => {
         fetchData();
       })
       .subscribe();
 
     const methodsChannel = supabase
       .channel('public:learning_methods')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'learning_methods' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'learning_methods', filter: `user_id=eq.${session.user.id}` }, () => {
         fetchData();
       })
       .subscribe();
 
     const journalsChannel = supabase
       .channel('public:journal_entries')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'journal_entries' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'journal_entries', filter: `user_id=eq.${session.user.id}` }, () => {
         fetchData();
       })
       .subscribe();
 
     const resourcesChannel = supabase
       .channel('public:resources')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'resources', filter: `user_id=eq.${session.user.id}` }, () => {
         fetchData();
       })
       .subscribe();
 
     const categoriesChannel = supabase
       .channel('public:categories')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories', filter: `user_id=eq.${session.user.id}` }, () => {
         fetchData();
       })
       .subscribe();

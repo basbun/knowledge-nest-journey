@@ -31,7 +31,7 @@ const CategoryItem = ({
   onDrop
 }: CategoryItemProps) => {
   // Filter topics that belong to this category
-  const categoryTopics = topics.filter(topic => topic.category === categoryName || topic.category === categoryId);
+  const categoryTopics = topics.filter(topic => topic.categoryId === categoryId || topic.category === categoryName || topic.category === categoryId);
 
   const [isDragOver, setIsDragOver] = useState(false);
 

@@ -11,7 +11,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { PlusIcon } from 'lucide-react';
 import CategoryItem from './CategoryItem';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 
 const statusOrder = {
   'Not Started': 0,
@@ -38,7 +38,6 @@ const TopicList = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [draggedTopic, setDraggedTopic] = useState<Topic | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
   const isMobile = useIsMobile();
   const [selectedStatuses, setSelectedStatuses] = useState<TopicStatus[]>(['Not Started', 'In Progress', 'Completed']);
 
@@ -109,9 +108,12 @@ const TopicList = () => {
   };
 
   const handleDrop = (categoryId: string) => {
-    if (draggedTopic && draggedTopic.category !== categoryId) {
-      updateTopic(draggedTopic.id, { category: categoryId });
-      toast.success(`Topic moved to ${categories.find(c => c.id === categoryId)?.name || 'new category'}`);
+    if (draggedTopic) {
+      const destName = categories.find(c => c.id === categoryId)?.name;
+      if (draggedTopic.categoryId !== categoryId) {
+        updateTopic(draggedTopic.id, { categoryId, category: destName });
+        toast.success(`Topic moved to ${destName || 'new category'}`);
+      }
       setDraggedTopic(null);
     }
   };

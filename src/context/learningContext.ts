@@ -20,7 +20,7 @@ export interface LearningContextType {
   updateResource: (id: string, updates: Partial<Resource>) => void;
   deleteResource: (id: string) => void;
   categories: Category[];
-  addCategory: (name: string) => void;
+  addCategory: (name: string) => Promise<void | string | undefined>;
   updateCategory: (id: string, updates: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
   reorderCategory: (id: string, direction: 'up' | 'down') => void;
