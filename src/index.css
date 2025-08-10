@@ -167,3 +167,9 @@
 [draggable="true"] input {
   pointer-events: auto;
 }
+
+/* Disable hover transforms while dragging to avoid misalignment */
+.dragging .learning-card,
+.dragging .group:hover .learning-card {
+  transform: none !important;
+}

@@ -37,18 +37,29 @@ const CategoryItem = ({
     e.dataTransfer.setData('text/plain', topic.id);
     e.dataTransfer.effectAllowed = 'move';
     
-    // Prefer inner card element for clean drag image
+    // Use inner card element for clean drag image
     const dragElement = e.currentTarget as HTMLElement;
     const cardEl = dragElement.querySelector('.learning-card') as HTMLElement | null;
     const targetEl = cardEl ?? dragElement;
     const rect = targetEl.getBoundingClientRect();
-    
-    // Set the drag image to just the card being dragged
-    e.dataTransfer.setDragImage(targetEl, rect.width / 2, rect.height / 2);
-    
+
+    // Align drag image with cursor position within the card
+    const clientX = (e as any).clientX ?? e.nativeEvent.clientX;
+    const clientY = (e as any).clientY ?? e.nativeEvent.clientY;
+    const offsetX = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    const offsetY = Math.max(0, Math.min(rect.height, clientY - rect.top));
+
+    e.dataTransfer.setDragImage(targetEl, offsetX, offsetY);
+
+    // Prevent hover transforms during dragging
+    document.body.classList.add('dragging');
+
     onDragStart(topic);
   };
 
+  const handleDragEnd = () => {
+    document.body.classList.remove('dragging');
+  };
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
@@ -84,6 +95,7 @@ const CategoryItem = ({
                 className="relative group"
                 draggable
                 onDragStart={(e) => handleDragStart(e, topic)}
+                onDragEnd={handleDragEnd}
               >
                 <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <div className="bg-white/90 backdrop-blur-sm rounded-md p-1 shadow-sm border">
