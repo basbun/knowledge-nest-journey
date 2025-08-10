@@ -37,9 +37,11 @@ const TopicList = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [draggedTopic, setDraggedTopic] = useState<Topic | null>(null);
   const isMobile = useIsMobile();
   const [selectedStatuses, setSelectedStatuses] = useState<TopicStatus[]>(['Not Started', 'In Progress', 'Completed']);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const filteredAndSortedTopics = topics
     .filter(topic => selectedStatuses.includes(topic.status))
@@ -103,18 +105,17 @@ const TopicList = () => {
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (categoryId: string) => {
-    if (draggedTopic) {
-      const destName = categories.find(c => c.id === categoryId)?.name;
-      if (draggedTopic.categoryId !== categoryId) {
-        updateTopic(draggedTopic.id, { categoryId, category: destName });
-        toast.success(`Topic moved to ${destName || 'new category'}`);
-      }
-      setDraggedTopic(null);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const dragged = topics.find((t) => t.id === activeId);
+    if (!dragged) return;
+    if (dragged.categoryId !== overId) {
+      const destName = categories.find((c) => c.id === overId)?.name;
+      updateTopic(dragged.id, { categoryId: overId, category: destName });
+      toast.success(`Topic moved to ${destName || 'new category'}`);
     }
   };
 
@@ -189,21 +190,20 @@ const TopicList = () => {
         </Button>
       </div>
 
-      {sortedCategories.map((category) => (
-        <CategoryItem
-          key={category.id}
-          categoryId={category.id}
-          categoryName={category.name}
-          topics={filteredAndSortedTopics}
-          isActive={category.isActive}
-          onTopicClick={handleTopicClick}
-          onCategoryAction={handleCategoryAction}
-          onDeleteCategory={handleDeleteCategory}
-          onDragStart={setDraggedTopic}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        />
-      ))}
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        {sortedCategories.map((category) => (
+          <CategoryItem
+            key={category.id}
+            categoryId={category.id}
+            categoryName={category.name}
+            topics={filteredAndSortedTopics}
+            isActive={category.isActive}
+            onTopicClick={handleTopicClick}
+            onCategoryAction={handleCategoryAction}
+            onDeleteCategory={handleDeleteCategory}
+          />
+        ))}
+      </DndContext>
 
       {topics.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 text-center">

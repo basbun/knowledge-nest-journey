@@ -52,9 +52,8 @@ const TopicForm = ({ topic, onClose }: TopicFormProps) => {
     
     let selectedCategoryId = category;
     if (showNewCategory) {
-      await addCategory(newCategory);
-      const created = categories.find((c) => c.name === newCategory);
-      selectedCategoryId = created?.id || '';
+      const createdId = await addCategory(newCategory);
+      selectedCategoryId = createdId || selectedCategoryId;
     }
 
     if (!selectedCategoryId) {

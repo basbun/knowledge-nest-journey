@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 export const useCategories = (initialCategories: Category[] = []) => {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
 
-  const addCategory = async (name: string) => {
+  const addCategory = async (name: string): Promise<string | undefined> => {
     try {
       const newId = uuidv4();
       const order = categories.length;
@@ -16,7 +16,7 @@ export const useCategories = (initialCategories: Category[] = []) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You need to be logged in to save data');
-        return;
+        return undefined;
       }
       
       const newCategory: Category = {
@@ -42,12 +42,15 @@ export const useCategories = (initialCategories: Category[] = []) => {
         console.error('Error adding category:', error);
         toast.error('Failed to save category to database');
         setCategories(prevCategories => prevCategories.filter(c => c.id !== newId));
+        return undefined;
       } else {
         toast.success('Category added successfully');
+        return newId;
       }
     } catch (error) {
       console.error('Error in addCategory:', error);
       toast.error('An error occurred while adding the category');
+      return undefined;
     }
   };
 
