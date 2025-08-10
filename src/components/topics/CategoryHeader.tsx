@@ -1,21 +1,24 @@
 
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 
 interface CategoryHeaderProps {
   categoryId: string;
   categoryName: string;
   isActive: boolean;
+  topicCount: number;
   onAction: (categoryId: string, action: 'up' | 'down' | 'toggle') => void;
   onDelete: (categoryId: string) => void;
 }
 
-const CategoryHeader = ({ categoryId, categoryName, isActive, onAction, onDelete }: CategoryHeaderProps) => {
+const CategoryHeader = ({ categoryId, categoryName, isActive, topicCount, onAction, onDelete }: CategoryHeaderProps) => {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <h3 className="text-xl font-semibold text-hub-text">{categoryName}</h3>
+        <Badge variant="secondary" className="text-xs">{topicCount} {topicCount === 1 ? 'topic' : 'topics'}</Badge>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
