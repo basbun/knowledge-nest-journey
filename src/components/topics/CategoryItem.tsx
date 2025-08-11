@@ -16,6 +16,34 @@ interface CategoryItemProps {
   onDeleteCategory: (categoryId: string) => void;
 }
 
+const DraggableTopicCard = ({ topic, onTopicClick }: { topic: Topic; onTopicClick: (topic: Topic) => void; }) => {
+  const { attributes, listeners, setNodeRef: setDragRef, transform } = useDraggable({ id: topic.id });
+  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50 } : undefined;
+
+  return (
+    <div 
+      ref={setDragRef}
+      {...attributes}
+      {...listeners}
+      style={style}
+      className="relative group"
+    >
+      <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="bg-white/90 backdrop-blur-sm rounded-md p-1 shadow-sm border">
+          <GripVertical className="h-4 w-4 text-gray-500 cursor-grab active:cursor-grabbing" />
+        </div>
+      </div>
+      <div className="group-hover:shadow-lg transition-shadow duration-200">
+        <TopicCard 
+          topic={topic} 
+          onClick={onTopicClick} 
+          className="h-full cursor-pointer" 
+        />
+      </div>
+    </div>
+  );
+};
+
 const CategoryItem = ({
   categoryId,
   categoryName,
@@ -54,33 +82,9 @@ const CategoryItem = ({
               </div>
             )}
             {categoryTopics.length > 0 ? (
-              categoryTopics.map(topic => {
-                const {attributes, listeners, setNodeRef: setDragRef, transform, isDragging} = useDraggable({ id: topic.id });
-                const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`, zIndex: 50 } : undefined;
-                return (
-                  <div 
-                    key={topic.id}
-                    ref={setDragRef}
-                    {...attributes}
-                    {...listeners}
-                    style={style}
-                    className="relative group"
-                  >
-                    <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <div className="bg-white/90 backdrop-blur-sm rounded-md p-1 shadow-sm border">
-                        <GripVertical className="h-4 w-4 text-gray-500 cursor-grab active:cursor-grabbing" />
-                      </div>
-                    </div>
-                    <div className="group-hover:shadow-lg transition-shadow duration-200">
-                      <TopicCard 
-                        topic={topic} 
-                        onClick={onTopicClick} 
-                        className="h-full cursor-pointer" 
-                      />
-                    </div>
-                  </div>
-                );
-              })
+              categoryTopics.map(topic => (
+                <DraggableTopicCard key={topic.id} topic={topic} onTopicClick={onTopicClick} />
+              ))
             ) : (
               <div className="col-span-3 py-4 text-center text-hub-text-muted">
                 No topics in this category
